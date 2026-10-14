@@ -6,6 +6,6 @@ Commercial construction company landing page. Built from a Figma design with pla
 - Hero entrance animation, scroll reveals, counters
 - Accordion, mobile menu, contact form
 
-Live: https://elitebuilders-three.vercel.app
+Live: https://elite-builders-inc.vercel.app
 
 Open `index.html` in a browser, nothing to install.

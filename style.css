@@ -381,7 +381,7 @@ h3 {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, 224px);
+  grid-template-columns: repeat(3, minmax(0, 224px));
   margin-top: 62px;
   animation: fadeUp .8s var(--ease) .34s both;
 }
@@ -1023,14 +1023,25 @@ h3 {
 
 /* responsive */
 
-@media (max-width: 1280px) {
+@media (max-width: 1360px) {
   .hero h1 {
     font-size: 60px;
     line-height: 72px;
   }
 
   .hero .container {
-    grid-template-columns: 1fr 480px;
+    grid-template-columns: 1fr 440px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    gap: 40px;
+  }
+
+  .stats b {
+    font-size: 52px;
+    line-height: 64px;
   }
 
   .review-box,
@@ -1185,6 +1196,7 @@ h3 {
   .stats {
     grid-template-columns: repeat(3, auto);
     justify-content: space-between;
+    gap: 12px;
     margin-top: 40px;
     font-size: 14px;
   }

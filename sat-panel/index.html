@@ -63,26 +63,26 @@
   .count-l b { color: var(--ink); font-weight: 800; font-variant-numeric: normal; }
 
   /* ---------- the "now" card ---------- */
-  .now { background: var(--hero); color: var(--on-hero); border-radius: 30px; padding: 18px 18px 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
-  .now-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--hero-muted); }
-  .now-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--hero-soft); color: var(--on-hero); padding: 6px 11px; border-radius: 99px; font-weight: 800; }
-  .now-tag i { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 4px rgba(184,240,106,.18); animation: pulse 1.8s ease-in-out infinite; }
-  .now-tag.idle i { background: var(--hero-muted); box-shadow: none; animation: none; }
-  @keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(184,240,106,0); } }
-  .now-main { display: flex; gap: 14px; align-items: center; margin: 16px 0 4px; }
-  .now-emo { width: 52px; height: 52px; border-radius: 18px; background: var(--hero-soft); display: grid; place-items: center; font-size: 26px; flex: none; }
-  .now h2 { font-family: var(--display); font-size: 25px; line-height: 1.08; letter-spacing: -.5px; margin: 0; font-weight: 700; }
-  .now-topic { font-size: 14px; font-weight: 600; color: var(--hero-muted); margin-top: 4px; line-height: 1.35; }
-  .now-cta { margin-top: 16px; }
-  .now-note { margin-top: 14px; font-size: 13px; font-weight: 700; color: var(--hero-muted); display: flex; gap: 8px; align-items: center; }
-  .now-note b { color: var(--on-hero); }
-  .daybar { display: flex; gap: 4px; margin-top: 16px; }
-  .daybar i { flex: 1; height: 7px; border-radius: 9px; background: var(--hero-soft); }
-  .daybar i.done { background: var(--lime); }
-  .daybar i.skip { background: var(--coral); }
-  .daybar i.miss { background: rgba(255,255,255,.22); }
-  .daybar i.cur { background: transparent; box-shadow: inset 0 0 0 2px var(--lime); }
-  .daytxt { margin-top: 8px; font-size: 12.5px; font-weight: 700; color: var(--hero-muted); }
+  .now { position: relative; overflow: hidden; background: linear-gradient(155deg, #e6fdb9 0%, var(--lime) 52%, #a3e256 100%); color: var(--on-lime); border-radius: 30px; padding: 18px 18px 16px; margin-bottom: 12px; box-shadow: 0 14px 34px rgba(110,170,40,.22); }
+  .now::before { content: ""; position: absolute; width: 240px; height: 240px; right: -70px; top: -90px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.6), rgba(255,255,255,0) 70%); pointer-events: none; }
+  .now > * { position: relative; }
+  .now-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .now-tag { display: inline-flex; align-items: center; gap: 7px; background: rgba(255,255,255,.62); padding: 7px 12px; border-radius: 99px; font-size: 13px; font-weight: 800; }
+  .now-tag i { width: 8px; height: 8px; border-radius: 50%; background: var(--on-lime); box-shadow: 0 0 0 4px rgba(34,55,11,.14); animation: pulse 1.8s ease-in-out infinite; }
+  .now-tag.idle i { animation: none; opacity: .45; box-shadow: none; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(34,55,11,0); } }
+  .now-time { display: block; font-size: 13px; font-weight: 700; opacity: .7; margin: 8px 0 0 2px; }
+  .ring { position: relative; width: 58px; height: 58px; flex: none; }
+  .ring svg { width: 58px; height: 58px; display: block; }
+  .ring span { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12.5px; font-weight: 800; letter-spacing: -.2px; }
+  .now-main { display: flex; gap: 14px; align-items: center; margin: 14px 0 0; }
+  .now-emo { width: 58px; height: 58px; border-radius: 20px; background: rgba(255,255,255,.7); display: grid; place-items: center; font-size: 28px; flex: none; }
+  .now h2 { font-family: var(--display); font-size: 26px; line-height: 1.08; letter-spacing: -.6px; margin: 0; font-weight: 700; }
+  .now-topic { font-size: 14px; font-weight: 600; opacity: .72; margin-top: 4px; line-height: 1.35; }
+  .now-cta { margin-top: 18px; }
+  .now .btn.go { background: #1c2a0c; color: #f3ffe0; height: 56px; width: 100%; border-radius: 18px; font-size: 15.5px; box-sizing: border-box; }
+  .now-note { margin-top: 12px; font-size: 13px; font-weight: 700; opacity: .75; display: flex; gap: 6px; align-items: center; justify-content: center; }
+  .now-note b { font-weight: 800; }
 
   /* ---------- tiles ---------- */
   .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
@@ -571,40 +571,42 @@ function renderHome() {
   renderTimeline();
 }
 
+// progress ring: blocks started today
+function ring(done, total) {
+  const r = 23, c = 2 * Math.PI * r, p = total ? Math.min(1, done / total) : 0;
+  return `<div class="ring" title="Bugun boshlangan bloklar"><svg viewBox="0 0 58 58"><circle cx="29" cy="29" r="${r}" fill="none" stroke="rgba(34,55,11,.14)" stroke-width="5.5"/>
+    <circle cx="29" cy="29" r="${r}" fill="none" stroke="#22370b" stroke-width="5.5" stroke-linecap="round" stroke-dasharray="${(c * p).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 29 29)"/></svg><span>${done}/${total}</span></div>`;
+}
+
 // the single most important thing right now
 function renderNow() {
   const d = D, bl = d.blocks || [], p = d.plans.find((x) => x.day === d.today);
   let ci = -1; bl.forEach((b, i) => { if (toMin(b.key) <= d.now_min) ci = i; });
-  const cur = bl[ci], nextI = bl.findIndex((b) => toMin(b.key) > d.now_min), nxt = bl[nextI];
+  const cur = bl[ci], nxt = bl.find((b) => toMin(b.key) > d.now_min);
   const done = bl.filter((b) => b.status === "done").length, goal = Math.max(1, Math.ceil(bl.length * 0.75));
-  const inMin = (b) => { const m = toMin(b.key) - d.now_min, h = Math.floor(m / 60); return h ? `${h} soat ${m % 60 ? (m % 60) + " daqiqa" : ""}dan keyin`.replace(" dan", "dan") : `${m} daqiqadan keyin`; };
+  const inMin = (b) => { const m = toMin(b.key) - d.now_min, h = Math.floor(m / 60), mm = m % 60; return h ? `${h} soat${mm ? " " + mm + " daqiqa" : ""}dan keyin` : `${m} daqiqadan keyin`; };
   const topic = (b) => blockTopic(p, b.key);
+  const head = (tag, idle, time) => `<div class="now-head"><div><span class="now-tag ${idle ? "idle" : ""}"><i></i>${tag}</span>${time ? `<span class="now-time">${esc(time)}</span>` : ""}</div>${bl.length ? ring(done, bl.length) : ""}</div>`;
+  const main = (emo, title, sub) => `<div class="now-main"><div class="now-emo">${emo}</div><div><h2>${esc(title)}</h2>${sub ? `<div class="now-topic">${esc(sub)}</div>` : ""}</div></div>`;
   let h;
   if (!bl.length) {
     const tm = d.plans.find((x) => x.day !== d.today);
     const isTest = tm && (tm.kind === "test" || tm.kind === "exam");
-    const title = !tm ? "Dam oling" : tm.kind === "test" ? `${tm.math || "Practice test"}` : tm.kind === "exam" ? "SAT kuni" : (tm.math || KIND[tm.kind] || "Ertangi reja");
+    const title = !tm ? "Dam oling" : tm.kind === "test" ? (tm.math || "Practice test") : tm.kind === "exam" ? "SAT kuni" : (tm.math || KIND[tm.kind] || "Ertangi reja");
     const sub = (p && p.evening) || (tm ? [KIND[tm.kind], tm.grammar].filter(Boolean).join(": ") : "Ertaga yangi kun.");
-    h = `<div class="now-top"><span class="now-tag idle"><i></i>Ertaga${isTest ? " 08:00" : ""}</span><span>Bugun: ${esc((KIND[p && p.kind] || "dam kuni").toLowerCase())}</span></div>
-      <div class="now-main"><div class="now-emo">${isTest ? "📝" : "🌱"}</div><div><h2>${esc(title)}</h2><div class="now-topic">${esc(sub)}</div></div></div>
-      <div class="now-cta"><button class="btn lime big" data-go="v-quiz">Savol yechib isinish</button></div>`;
+    h = head("Ertaga", true, isTest ? "08:00 da boshlanadi" : "") + main(isTest ? "📝" : "🌱", title, sub)
+      + `<div class="now-cta"><button class="btn go" data-go="v-quiz">Savol yechib isinish</button></div>`;
   } else if (cur && !cur.status) {
-    h = `<div class="now-top"><span class="now-tag"><i></i>Hozir</span><span>${esc(cur.time)}</span></div>
-      <div class="now-main"><div class="now-emo">${cur.emoji}</div><div><h2>${esc(cur.title)}</h2>${topic(cur) ? `<div class="now-topic">${esc(topic(cur))}</div>` : ""}</div></div>
-      <div class="now-cta"><button class="btn lime big" data-mark="${cur.key}">Boshladim</button></div>
-      ${nxt ? `<div class="now-note">Keyin: <b>${nxt.time.slice(0, 5)} ${esc(nxt.title)}</b></div>` : ""}`;
+    h = head("Hozir", false, cur.time) + main(cur.emoji, cur.title, topic(cur))
+      + `<div class="now-cta"><button class="btn go" data-mark="${cur.key}">Boshladim</button></div>`
+      + (nxt ? `<div class="now-note">Keyin <b>${nxt.time.slice(0, 5)} ${esc(nxt.title)}</b></div>` : "");
   } else if (nxt) {
-    h = `<div class="now-top"><span class="now-tag idle"><i></i>Keyingi blok</span><span>${inMin(nxt)}</span></div>
-      <div class="now-main"><div class="now-emo">${nxt.emoji}</div><div><h2>${esc(nxt.title)}</h2><div class="now-topic">${esc(nxt.time)}${topic(nxt) ? " — " + esc(topic(nxt)) : ""}</div></div></div>
-      ${cur && cur.status === "done" ? `<div class="now-note">${ICON.check} <b>${esc(cur.title)}</b> boshlandi</div>` : ""}`;
+    h = head("Keyingi", true, inMin(nxt)) + main(nxt.emoji, nxt.title, [nxt.time, topic(nxt)].filter(Boolean).join(" — "))
+      + (cur && cur.status === "done" ? `<div class="now-note">${ICON.check} <b>${esc(cur.title)}</b> boshlandi</div>` : "");
   } else {
-    const w = d.today_work;
-    h = `<div class="now-top"><span class="now-tag idle"><i></i>Kun tugadi</span></div>
-      <div class="now-main"><div class="now-emo">🌙</div><div><h2>${done} / ${bl.length} blok</h2><div class="now-topic">${done >= goal ? "Bugungi maqsad bajarildi — streak saqlanadi." : `Streak uchun ${goal} ta kerak edi.`}</div></div></div>
-      ${w ? "" : `<div class="now-cta"><button class="btn lime big" data-sheet="report">Kechki hisobni kiritish</button></div>`}`;
+    h = head("Kun tugadi", true, "") + main("🌙", `${done} / ${bl.length} blok`, done >= goal ? "Bugungi maqsad bajarildi, streak saqlandi." : `Streak uchun ${goal} ta kerak edi.`)
+      + (d.today_work ? "" : `<div class="now-cta"><button class="btn go" data-sheet="report">Kechki hisobni kiritish</button></div>`);
   }
-  const segs = bl.map((b, i) => `<i class="${b.status === "done" ? "done" : b.status === "skip" ? "skip" : b.status === "miss" ? "miss" : i === ci ? "cur" : ""}"></i>`).join("");
-  if (bl.length) h += `<div class="daybar">${segs}</div><div class="daytxt"><span>${done} / ${bl.length} blok</span><span>${done >= goal ? "streak saqlandi" : `streakgacha ${goal - done} ta`}</span></div>`;
   $("now").innerHTML = h;
 }
 

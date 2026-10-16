@@ -134,6 +134,21 @@
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
   .chips button { all: unset; font-size: 12px; font-weight: 700; padding: 7px 11px; border-radius: 99px; background: var(--soft); cursor: pointer; }
+  .chips button.on { background: var(--ink); color: #fff; }
+
+  details.mat { background: var(--soft); border-radius: 18px; margin-top: 8px; overflow: hidden; }
+  details.mat summary { list-style: none; display: flex; gap: 12px; align-items: center; padding: 10px 12px; cursor: pointer; }
+  details.mat summary::-webkit-details-marker { display: none; }
+  details.mat summary .txt { flex: 1; min-width: 0; }
+  details.mat summary .t { font-weight: 800; font-size: 15px; }
+  details.mat summary .s { font-size: 12px; color: var(--muted); font-weight: 600; }
+  details.mat summary .arr { transition: transform .2s; color: var(--muted); }
+  details.mat[open] summary .arr { transform: rotate(90deg); }
+  details.mat .body { padding: 0 14px 14px; font-size: 14.5px; line-height: 1.55; font-weight: 500; -webkit-user-select: text; user-select: text; }
+  details.mat .body b { font-weight: 800; }
+  details.mat .body code { background: #fff; border-radius: 6px; padding: 1px 5px; font-size: 13.5px; }
+  details.mat.lesson { background: var(--lime-soft); }
+  .rs { font-weight: 800; }
 
   .scrim { position: fixed; inset: 0; background: rgba(20,25,18,.35); opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 20; }
   .scrim.on { opacity: 1; pointer-events: auto; }
@@ -191,6 +206,11 @@
       <p class="lead" id="blkLead">Boshlagan blokingizni belgilang — streak shundan hisoblanadi.</p>
       <div class="bar" style="margin:0 0 4px"><i id="blkBar" style="width:0%;background:var(--lime2)"></i></div>
       <div id="blocks"></div>
+    </div>
+
+    <div class="card" id="matCard" hidden>
+      <div class="card-h"><h3>Bugungi material</h3><span class="hint" id="matHint"></span></div>
+      <div id="materials"></div>
     </div>
 
     <div class="card">
@@ -366,10 +386,27 @@ function renderHome() {
       <div class="txt"><div class="t">${esc(b.title)}${isNow ? '<span class="tag lime">hozir</span>' : ""}</div><div class="s">${esc(b.time)}</div></div>${right}</div>`;
   }).join("") || emptyBox(ICON.moon, "Bugun belgilanadigan blok yo'q. Ertaga yangi kun.");
 
+  const mats = d.materials || [];
+  $("matCard").hidden = !mats.length;
+  $("matHint").textContent = mats.length ? `${mats.length} ta` : "";
+  $("materials").innerHTML = mats.map((m, i) => {
+    const cls = m.kind === "lesson" ? "lesson" : "";
+    const icon = m.kind === "lesson" ? "🧑‍🏫" : m.section === "math" ? "📐" : m.section === "rw" ? "📘" : "📄";
+    const sub = (m.kind === "lesson" ? "Kechagi xatolardan dars" : "Material") + (m.section !== "general" ? ` · ${m.section === "math" ? "Math" : "R&W"}` : "");
+    return `<details class="mat ${cls}" ${i === 0 ? "open" : ""}><summary><div class="chip" style="background:#fff">${icon}</div>
+      <div class="txt"><div class="t">${esc(m.title)}</div><div class="s">${esc(sub)}</div></div><span class="arr">›</span></summary>
+      <div class="body">${richText(m.body)}</div></details>`;
+  }).join("");
+
   const p = d.plans.find((x) => x.day === d.today);
   $("kindHint").textContent = p ? KIND[p.kind] || "" : "";
   $("topicsToday").innerHTML = topicRows(p) || emptyBox(ICON.moon, "Bugun uchun mavzu yo'q.");
 }
+// tiny formatter for materials: **bold**, `code`, line breaks
+function richText(s) {
+  return esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\n/g, "<br>");
+}
+const REASON = { qoida: "Qoidani bilmadim", shoshildim: "Shoshildim", tushunmadim: "Savolni tushunmadim", soz: "So'zni bilmadim", vaqt: "Vaqt yetmadi" };
 function topicRows(p) {
   if (!p) return "";
   const it = (cls, icon, title, text) => text ? `<div class="row"><div class="chip ${cls}">${icon}</div><div class="txt"><div class="t">${esc(text)}</div><div class="s">${title}</div></div></div>` : "";
@@ -438,7 +475,7 @@ function renderBook() {
   const list = open.filter((m) => bookFilter === "all" || m.section === bookFilter);
   $("openHint").textContent = `${list.length} ta`;
   $("mistakes").innerHTML = list.length ? list.map((m) => `<div class="row"><div class="chip ${m.section === "math" ? "purple" : "blue"}">${m.section === "math" ? ICON.math : ICON.rw}</div>
-    <div class="txt"><div class="t">${esc(m.topic)}</div><div class="s">${esc(m.note ? String(m.note).replace(/^Savol: /, "") : (m.source === "quiz" ? "tekshiruv savoli" : "izohsiz"))} · ${fmt(m.day)}</div></div>
+    <div class="txt"><div class="t">${esc(m.topic)}</div><div class="s">${m.reason ? `<span class="rs">${esc(REASON[m.reason] || m.reason)}</span> · ` : ""}${m.my_answer || m.right_answer ? `${esc(m.my_answer || "?")} → ${esc(m.right_answer || "?")} · ` : ""}${esc(m.note ? String(m.note).replace(/^Savol: /, "") : m.question ? String(m.question).slice(0, 70) : (m.source === "quiz" ? "tekshiruv savoli" : "izohsiz"))} · ${fmt(m.day)}</div></div>
     <button class="btn lime" data-resolve="${m.id}">${ICON.check} Hal</button></div>`).join("")
     : emptyBox(ICON.check, "Bu yerda ochiq xato yo'q.");
 }
@@ -532,19 +569,31 @@ function openSheet(kind) {
   } else if (kind === "mistake") {
     let sec = Q.section;
     const sugg = () => (D.topics[sec] || []).slice(0, 14).map((x) => `<button data-topic="${esc(x)}">${esc(x)}</button>`).join("");
-    b.innerHTML = `<h3>Xato qo'shish</h3><p class="lead">Mavzu va qisqa sabab — yakshanba takrorlaymiz.</p>
+    let reason = null;
+    b.innerHTML = `<h3>Xato qo'shish</h3><p class="lead">Kechqurun Claude shu yozganlaringizni tahlil qiladi — qancha aniq yozsangiz, shuncha yaxshi.</p>
       <div class="seg small inset" id="mSeg"><button data-s="math">Math</button><button data-s="rw">R&amp;W</button></div>
       <label class="f">Mavzu</label><input class="inp" id="m_t" placeholder="masalan: Foiz o'zgarishi" maxlength="60">
       <div class="chips" id="mSugg"></div>
-      <label class="f">Nega xato qildim? (ixtiyoriy)</label><textarea class="inp" id="m_n" maxlength="200" placeholder="eski narxga emas, yangisiga bo'ldim"></textarea>
+      <label class="f">Savol (ko'chirib yoki qisqacha yozing)</label><textarea class="inp" id="m_q" maxlength="1500" placeholder="A shirt costs $40 after a 20% discount. What was the original price?"></textarea>
+      <div class="grid2"><div><label class="f">Mening javobim</label><input class="inp" id="m_my" maxlength="200" placeholder="B (48)"></div>
+      <div><label class="f">To'g'ri javob</label><input class="inp" id="m_ok" maxlength="200" placeholder="D (50)"></div></div>
+      <label class="f">Nega xato qildim?</label>
+      <div class="chips" id="mWhy">${Object.entries(REASON).map(([k, v]) => `<button data-r="${k}">${v}</button>`).join("")}</div>
+      <label class="f">Izoh (ixtiyoriy)</label><textarea class="inp" id="m_n" maxlength="200" placeholder="eski narxga emas, yangisiga bo'ldim"></textarea>
       <button class="btn dark big" style="margin-top:16px" id="sSave">Saqlash</button>`;
     const paint = () => { b.querySelectorAll("#mSeg button").forEach((x) => x.classList.toggle("on", x.dataset.s === sec)); $("mSugg").innerHTML = sugg();
       $("mSugg").querySelectorAll("[data-topic]").forEach((x) => x.onclick = () => { $("m_t").value = x.dataset.topic; haptic(); }); };
     b.querySelectorAll("#mSeg button").forEach((x) => x.onclick = () => { sec = x.dataset.s; paint(); haptic(); });
+    b.querySelectorAll("#mWhy button").forEach((x) => x.onclick = () => {
+      reason = reason === x.dataset.r ? null : x.dataset.r;
+      b.querySelectorAll("#mWhy button").forEach((y) => y.classList.toggle("on", y.dataset.r === reason)); haptic();
+    });
     paint();
     $("sSave").onclick = async () => {
       $("sSave").disabled = true;
-      if (await act({ action: "mistake_add", section: sec, topic: $("m_t").value, note: $("m_n").value }, "Daftarga qo'shildi ✓")) closeSheet(); else $("sSave").disabled = false;
+      const ok = await act({ action: "mistake_add", section: sec, topic: $("m_t").value, question: $("m_q").value,
+        my_answer: $("m_my").value, right_answer: $("m_ok").value, reason, note: $("m_n").value }, "Daftarga qo'shildi ✓");
+      if (ok) closeSheet(); else $("sSave").disabled = false;
     };
   }
   $("scrim").classList.add("on"); $("sheet").classList.add("on"); haptic();

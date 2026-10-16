@@ -246,6 +246,93 @@
   .explain.ok { background: var(--lime-soft); color: var(--lime-ink); }
   .explain.bad { background: var(--coral-soft); color: var(--coral-ink); }
 
+  .tl-row.late .tl-dot i { background: var(--amber); box-shadow: none; }
+  .tl-row.late .tl-t { color: var(--muted); }
+  .seg .cnt { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 5px; border-radius: 99px; background: var(--coral); color: #fff; font-size: 11px; line-height: 18px; vertical-align: 1px; }
+  #v-quiz.vsess .vtitle, #v-quiz.vsess #qSeg { display: none; }
+
+  /* ---------- vocabulary ---------- */
+  .vhero { position: relative; overflow: hidden; background: linear-gradient(155deg, #e6fdb9 0%, var(--lime) 52%, #a3e256 100%); color: var(--on-lime); border-radius: 30px; padding: 18px; margin: 14px 0 12px; box-shadow: 0 14px 34px rgba(110,170,40,.22); }
+  .vhero::before { content: ""; position: absolute; width: 240px; height: 240px; right: -70px; top: -90px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.6), rgba(255,255,255,0) 70%); pointer-events: none; }
+  .vhero > * { position: relative; }
+  .vh-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0 14px; }
+  .vh-box { background: rgba(255,255,255,.62); border-radius: 20px; padding: 12px 14px; }
+  .vh-box b { display: block; font-family: var(--display); font-size: 30px; line-height: 1; font-weight: 800; letter-spacing: -1px; }
+  .vh-box span { display: block; font-size: 12.5px; font-weight: 700; opacity: .75; margin-top: 5px; }
+  .vhero .btn.go { background: #1c2a0c; color: #f3ffe0; height: 56px; width: 100%; border-radius: 18px; font-size: 15.5px; box-sizing: border-box; }
+  .vhero .btn.go2 { background: rgba(255,255,255,.66); color: var(--on-lime); height: 50px; width: 100%; border-radius: 18px; font-size: 15px; margin-top: 8px; box-sizing: border-box; }
+  .vstat { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; }
+  .vstat div + div { border-left: 1px solid var(--line); }
+  .vstat b { display: block; font-family: var(--display); font-size: 24px; font-weight: 800; letter-spacing: -.5px; }
+  .vstat span { font-size: 11.5px; font-weight: 700; color: var(--muted); }
+  .vsets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .vset { all: unset; background: var(--soft); border-radius: 20px; padding: 13px 14px; cursor: pointer; transition: transform .12s; }
+  .vset:active { transform: scale(.98); }
+  .vset .vs-h { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 15px; }
+  .vset .vs-s { font-size: 12px; color: var(--muted); font-weight: 700; margin-top: 3px; }
+  .vset.next { background: var(--lime-soft); box-shadow: inset 0 0 0 2px var(--lime2); }
+  .vset .mini i { background: var(--lime2); }
+  .vset.full { background: var(--lime); color: var(--on-lime); }
+  .vset.full .vs-s { color: var(--on-lime); opacity: .75; }
+  .vset.full .mini { background: rgba(255,255,255,.55); }
+  .vset.full .mini i { background: var(--on-lime); }
+
+  .vs-top { display: flex; align-items: center; gap: 12px; margin: 4px 0 14px; }
+  .vs-top .xbtn { background: var(--card); width: 40px; height: 40px; }
+  .vs-bar { flex: 1; display: flex; gap: 5px; }
+  .vs-bar i { flex: 1; height: 7px; border-radius: 9px; background: var(--card); transition: background .25s; }
+  .vs-bar i.ok { background: var(--lime2); }
+  .vs-bar i.no { background: var(--coral); }
+  .vs-bar i.cur { background: var(--ink); }
+  .vs-l { font-size: 13px; font-weight: 800; color: var(--muted); white-space: nowrap; }
+
+  .fc { perspective: 1400px; height: min(360px, 52vh); margin-bottom: 14px; cursor: pointer; }
+  .fc-in { position: relative; width: 100%; height: 100%; transition: transform .55s cubic-bezier(.2,.8,.2,1); transform-style: preserve-3d; }
+  .fc.flip .fc-in { transform: rotateY(180deg); }
+  .fc-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 32px; padding: 22px; display: flex; flex-direction: column; overflow: hidden; }
+  .fc-front { background: linear-gradient(155deg, #e6fdb9 0%, var(--lime) 55%, #a3e256 100%); color: var(--on-lime); box-shadow: 0 16px 36px rgba(110,170,40,.25); }
+  .fc-front::before { content: ""; position: absolute; width: 260px; height: 260px; right: -80px; top: -100px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.65), rgba(255,255,255,0) 70%); }
+  .fc-back { background: var(--hero); color: var(--on-hero); transform: rotateY(180deg); box-shadow: var(--shadow); }
+  .fc-face > * { position: relative; }
+  .fc-pos { align-self: flex-start; background: rgba(255,255,255,.62); padding: 6px 12px; border-radius: 99px; font-size: 12.5px; font-weight: 800; }
+  .fc-back .fc-pos { background: var(--hero-soft); color: var(--hero-muted); }
+  .fc-mid { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .fc-word { font-family: var(--display); font-size: clamp(36px, 11vw, 50px); font-weight: 800; letter-spacing: -1.5px; line-height: 1; word-break: break-word; }
+  .fc-alt { font-size: 15px; font-weight: 700; opacity: .65; margin-top: 10px; }
+  .fc-tap { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 800; opacity: .6; }
+  .fc-uz { font-family: var(--display); font-size: clamp(28px, 8.5vw, 38px); font-weight: 700; letter-spacing: -.8px; line-height: 1.1; }
+  .fc-more { font-size: 15px; font-weight: 600; color: var(--hero-muted); margin-top: 10px; line-height: 1.4; }
+  .fc-ant { background: var(--hero-soft); border-radius: 18px; padding: 11px 14px; font-size: 14px; font-weight: 600; color: var(--hero-muted); line-height: 1.35; }
+  .fc-ant span { display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 2px; }
+  .fc-ant b { color: var(--on-hero); font-weight: 800; }
+  .fc-hint { margin-top: 10px; background: rgba(184,240,106,.14); color: var(--lime); border-radius: 14px; padding: 9px 12px; font-size: 13.5px; font-weight: 700; }
+  .enter { animation: cardIn .32s cubic-bezier(.2,.8,.2,1); }
+  @keyframes cardIn { from { opacity: 0; transform: translateX(26px) scale(.98); } to { opacity: 1; transform: none; } }
+  .vq { background: linear-gradient(155deg, #e6fdb9 0%, var(--lime) 55%, #a3e256 100%); color: var(--on-lime); border-radius: 30px; padding: 18px 20px 20px; margin-bottom: 4px; }
+  .vq .fc-word { font-size: clamp(32px, 10vw, 44px); margin-top: 14px; }
+  .vq-ask { font-size: 13.5px; font-weight: 700; opacity: .7; margin-top: 8px; }
+  .vq-res { margin-top: 12px; background: var(--card); border-radius: 22px; padding: 14px 16px; font-size: 14px; font-weight: 600; color: var(--muted); line-height: 1.45; }
+  .vq-res b { color: var(--ink); font-weight: 800; }
+  .vq-res .vq-v { font-family: var(--display); font-size: 21px; font-weight: 700; color: var(--ink); letter-spacing: -.3px; }
+
+  .vsum { text-align: center; padding: 8px 0 0; }
+  .vsum .emo { font-size: 46px; line-height: 1; }
+  .vsum h2 { font-family: var(--display); font-size: 30px; letter-spacing: -.8px; margin: 12px 0 4px; font-weight: 800; }
+  .vsum .sub { font-size: 14px; color: var(--muted); font-weight: 700; }
+  .vsum-t { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0 10px; }
+  .vsum-t div { border-radius: 24px; padding: 16px 10px; }
+  .vsum-t b { display: block; font-family: var(--display); font-size: 40px; font-weight: 800; line-height: 1; letter-spacing: -1px; }
+  .vsum-t span { font-size: 13px; font-weight: 800; }
+  .vsum-t .ok { background: var(--lime); color: var(--on-lime); }
+  .vsum-t .no { background: var(--coral-soft); color: var(--coral-ink); }
+  .vsum-left { background: var(--card); border-radius: 20px; padding: 13px 16px; display: flex; justify-content: space-between; font-weight: 800; font-size: 14px; }
+  .vsum-left span { color: var(--muted); }
+  .vsum-w { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 14px 0 16px; }
+  .vsum-w span { padding: 7px 12px; border-radius: 99px; font-size: 13px; font-weight: 800; background: var(--card); }
+  .vsum-w span.ok { background: var(--lime-soft); color: var(--lime-ink); }
+  .vsum-w span.no { background: var(--coral-soft); color: var(--coral-ink); }
+  .vsum .grid2 { gap: 8px; margin-bottom: 8px; }
+
   /* ---------- forms + sheets ---------- */
   label.f { display: block; font-size: 12.5px; font-weight: 800; color: var(--muted); margin: 14px 2px 6px; }
   .inp { width: 100%; box-sizing: border-box; border: 2px solid transparent; background: var(--soft); border-radius: 16px; padding: 13px 14px; font-size: 16px; font-weight: 600; color: var(--ink); outline: none; -webkit-user-select: text; user-select: text; transition: border-color .15s, background .15s; }
@@ -358,9 +445,10 @@
   <!-- ===== QUIZ ===== -->
   <section class="view" id="v-quiz">
     <div class="vtitle"><div><h2>Mashq</h2><div class="sub" id="qSub">Javob darhol tekshiriladi</div></div></div>
-    <div class="seg" id="qSeg"><button class="on" data-s="math">Math</button><button data-s="rw">Reading &amp; Writing</button></div>
+    <div class="seg" id="qSeg"><button class="on" data-s="math">Math</button><button data-s="rw">R&amp;W</button><button data-s="vocab">So'zlar<span class="cnt" id="vCnt" hidden></span></button></div>
     <div class="qdots" id="qDots"></div>
     <div class="card" id="qCard"></div>
+    <div id="vocab" hidden></div>
   </section>
 
   <!-- ===== MISTAKES ===== -->
@@ -571,11 +659,14 @@ function renderHome() {
   renderTimeline();
 }
 
+const WAKE = "0500", WAKE_DL = 5 * 60 + 15, VOCAB_KEYS = ["0630", "1840"];
+const vocabLine = () => { const s = vsum(); return [s.due ? `${s.due} ta takror` : "", s.next_set ? `yangi Set ${s.next_set}` : ""].filter(Boolean).join(" + ") || "Lug'at"; };
+
 // progress ring: blocks started today
-function ring(done, total) {
+function ring(done, total, label) {
   const r = 23, c = 2 * Math.PI * r, p = total ? Math.min(1, done / total) : 0;
   return `<div class="ring" title="Bugun boshlangan bloklar"><svg viewBox="0 0 58 58"><circle cx="29" cy="29" r="${r}" fill="none" stroke="rgba(34,55,11,.14)" stroke-width="5.5"/>
-    <circle cx="29" cy="29" r="${r}" fill="none" stroke="#22370b" stroke-width="5.5" stroke-linecap="round" stroke-dasharray="${(c * p).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 29 29)"/></svg><span>${done}/${total}</span></div>`;
+    <circle cx="29" cy="29" r="${r}" fill="none" stroke="#22370b" stroke-width="5.5" stroke-linecap="round" stroke-dasharray="${(c * p).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 29 29)"/></svg><span>${label || `${done}/${total}`}</span></div>`;
 }
 
 // the single most important thing right now
@@ -596,9 +687,19 @@ function renderNow() {
     const sub = (p && p.evening) || (tm ? [KIND[tm.kind], tm.grammar].filter(Boolean).join(": ") : "Ertaga yangi kun.");
     h = head("Ertaga", true, isTest ? "08:00 da boshlanadi" : "") + main(isTest ? "📝" : "🌱", title, sub)
       + `<div class="now-cta"><button class="btn go" data-go="v-quiz">Savol yechib isinish</button></div>`;
+  } else if (cur && !cur.status && cur.key === WAKE) {
+    const late = d.now_min > WAKE_DL;
+    h = head(late ? "Kechikdingiz" : "Uyg'onish", false, late ? "05:15 o'tdi" : "05:15 gacha") + main("☀️", "Turdingizmi?", topic(cur))
+      + `<div class="now-cta"><button class="btn go" data-mark="${cur.key}">☀️ Turdim</button></div>`
+      + `<div class="now-note">${late ? "Bugun streak hisoblanmaydi — lekin kunni boshlang" : "05:15 gacha bosilmasa, streak uziladi"}</div>`;
   } else if (cur && !cur.status) {
-    h = head("Hozir", false, cur.time) + main(cur.emoji, cur.title, topic(cur))
-      + `<div class="now-cta"><button class="btn go" data-mark="${cur.key}">Boshladim</button></div>`
+    const vocabBlock = VOCAB_KEYS.includes(cur.key);
+    h = head("Hozir", false, cur.time) + main(cur.emoji, cur.title, topic(cur) || (vocabBlock ? vocabLine() : ""))
+      + `<div class="now-cta"><button class="btn go" data-mark="${cur.key}">${vocabBlock ? "Boshladim — so'zlarga" : "Boshladim"}</button></div>`
+      + (nxt ? `<div class="now-note">Keyin <b>${nxt.time.slice(0, 5)} ${esc(nxt.title)}</b></div>` : "");
+  } else if (cur && cur.status === "done" && VOCAB_KEYS.includes(cur.key) && vsum().due + (vsum().next_set ? 1 : 0) > 0) {
+    h = head("Hozir", false, cur.time) + main(cur.emoji, cur.title, vocabLine())
+      + `<div class="now-cta"><button class="btn go" data-go="v-quiz" data-vocab="1">So'zlarni ochish</button></div>`
       + (nxt ? `<div class="now-note">Keyin <b>${nxt.time.slice(0, 5)} ${esc(nxt.title)}</b></div>` : "");
   } else if (nxt) {
     h = head("Keyingi", true, inMin(nxt)) + main(nxt.emoji, nxt.title, [nxt.time, topic(nxt)].filter(Boolean).join(" — "))
@@ -620,9 +721,10 @@ function renderTimeline() {
     const i = from + j, future = toMin(b.key) > d.now_min;
     const st = b.status || (i === ci ? "cur" : future ? "future" : "pending");
     const right = st === "done" ? `<span class="tl-st ok">${ICON.check}</span>`
-      : st === "skip" ? `<span class="tl-st bad">o'tkazildi</span>`
+      : st === "skip" ? `<span class="tl-st bad">${b.key === WAKE ? "uxlab qoldi" : "o'tkazildi"}</span>`
+      : st === "late" ? `<span class="tl-st bad">kech</span>`
       : st === "miss" ? `<span class="tl-st dim">o'tdi</span>`
-      : st === "future" ? "" : `<button class="btn ${st === "cur" ? "dark" : "line"}" data-mark="${b.key}">Boshladim</button>`;
+      : st === "future" ? "" : `<button class="btn ${st === "cur" ? "dark" : "line"}" data-mark="${b.key}">${b.key === WAKE ? "Turdim" : "Boshladim"}</button>`;
     const tp = blockTopic(p, b.key);
     return `<div class="tl-row ${st}"><div class="tl-time">${b.time.slice(0, 5)}</div><div class="tl-dot"><i></i></div>
       <div class="tl-main"><div class="tl-t">${esc(b.title)}</div>${tp ? `<div class="tl-s">${esc(tp)}</div>` : ""}</div>${right}</div>`;
@@ -649,8 +751,14 @@ async function loadQuiz() {
   Q.loading = false; renderQuiz();
 }
 function renderQuiz() {
-  $("qSub").textContent = Q.n ? `Bu safar: ${Q.ok} / ${Q.n} to'g'ri` : "Javob darhol tekshiriladi";
   document.querySelectorAll("#qSeg button").forEach((b) => b.classList.toggle("on", b.dataset.s === Q.section));
+  const vs = vsum();
+  $("vCnt").hidden = !vs.due || Q.section === "vocab"; $("vCnt").textContent = vs.due;
+  const voc = Q.section === "vocab";
+  $("qDots").hidden = voc; $("qCard").hidden = voc; $("vocab").hidden = !voc;
+  $("v-quiz").classList.toggle("vsess", voc && !!V.mode);
+  if (voc) { $("qSub").textContent = "Lug'at — Words in Context uchun"; return renderVocab(); }
+  $("qSub").textContent = Q.n ? `Bu safar: ${Q.ok} / ${Q.n} to'g'ri` : "Javob darhol tekshiriladi";
   $("qDots").innerHTML = Q.hist.slice(-24).map((ok) => `<i style="background:${ok ? "var(--lime2)" : "var(--coral)"}"></i>`).join("");
   const el = $("qCard");
   if (Q.loading) { el.innerHTML = `<div class="sk" style="height:22px;width:40%;margin:0 0 14px"></div><div class="sk" style="height:60px"></div>${'<div class="sk" style="height:52px;margin-bottom:8px"></div>'.repeat(4)}`; return; }
@@ -677,6 +785,170 @@ async function answerQuiz(i) {
     haptic(r.correct ? "ok" : "bad"); renderQuiz();
     refresh();
   } catch (e) { toast("Javob saqlanmadi — qayta bosing"); document.querySelectorAll(".opt").forEach((b) => b.classList.remove("locked")); }
+}
+
+/* ---------- VOCABULARY (flashcards + spaced review) ---------- */
+const V_STEPS = 5, V_BATCH = 5;
+const V = { words: null, today: null, loading: false, mode: null, set: null, queue: [], batch: [], i: 0, res: {}, view: "card", flipped: false, picked: null, opts: {}, passWrong: new Set(), total: 0 };
+const vById = (id) => V.words.find((w) => w.id === id);
+const shuffle = (a) => a.map((x) => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map((p) => p[1]);
+const vDue = () => (V.words || []).filter((w) => w.seen && w.next_review && w.next_review <= V.today);
+// counts from loaded words when available (live during a session), otherwise from the server summary
+function vsum() {
+  if (!V.words) return (D && D.vocab) || { total: 0, seen: 0, due: 0, mastered: 0, next_set: null, sets: [] };
+  const sets = new Map(); let seen = 0, mastered = 0;
+  for (const w of V.words) {
+    const a = sets.get(w.set_no) || { set_no: w.set_no, n: 0, seen: 0, known: 0, mastered: 0 };
+    a.n++; if (w.seen) { a.seen++; seen++; } if (w.stage >= 1) a.known++; if (w.stage >= V_STEPS) { a.mastered++; mastered++; }
+    sets.set(w.set_no, a);
+  }
+  const list = [...sets.values()].sort((a, b) => a.set_no - b.set_no), nx = list.find((x) => x.seen < x.n);
+  return { total: V.words.length, seen, due: vDue().length, mastered, next_set: nx ? nx.set_no : null, sets: list };
+}
+async function loadVocab() {
+  if (V.loading) return;
+  V.loading = true; renderQuiz();
+  try { const d = await api({ action: "vocab" }); V.words = d.result.words || []; V.today = d.result.today; }
+  catch (e) { toast("So'zlar yuklanmadi — internetni tekshiring"); }
+  V.loading = false; renderQuiz();
+}
+function vSend(id, ok) {
+  api({ action: "vocab_answer", id, ok }).then((d) => {
+    const r = d.result, w = vById(id);
+    if (r && r.ok && w) { w.seen = true; if (r.stage !== undefined) w.stage = r.stage; if (r.next) w.next_review = r.next; }
+    $("vCnt").textContent = vsum().due;
+  }).catch(() => toast("Saqlanmadi — internetni tekshiring"));
+}
+function vStart(mode, setNo) {
+  if (!V.words) return;
+  let ids;
+  if (mode === "learn") {
+    const ws = V.words.filter((w) => w.set_no === setNo);
+    const notKnown = ws.filter((w) => !(w.stage >= 1 && w.next_review > V.today));
+    ids = (notKnown.length ? notKnown : ws).map((w) => w.id);
+  } else ids = shuffle(vDue().map((w) => w.id));
+  if (!ids.length) { toast("Hozir takrorlanadigan so'z yo'q"); return; }
+  Object.assign(V, { mode, set: setNo || null, queue: ids, total: ids.length, passWrong: new Set() });
+  vNextBatch(); haptic(); renderQuiz(); window.scrollTo({ top: 0 });
+}
+function vNextBatch() {
+  Object.assign(V, { batch: V.queue.splice(0, V_BATCH), i: 0, res: {}, flipped: false, picked: null, view: "card" });
+  if (V.mode === "review") V.batch.forEach((id, k) => { V.opts[id] = vMakeOpts(id, k % 3 === 2 ? "uz" : "en"); });
+}
+// 3 distractors, same part of speech when possible, never the same meaning twice
+function vMakeOpts(id, dir) {
+  const w = vById(id), key = (x) => (dir === "en" ? x.uz : x.word).toLowerCase();
+  const others = shuffle(V.words.filter((x) => x.id !== id && key(x) !== key(w)));
+  const pick = [], seenK = new Set([key(w)]);
+  for (const x of [...others.filter((x) => x.pos === w.pos), ...others]) { if (pick.length >= 3) break; if (!seenK.has(key(x))) { seenK.add(key(x)); pick.push(x.id); } }
+  return { dir, ids: shuffle([id, ...pick]) };
+}
+function vAnswer(ok) {
+  const id = V.batch[V.i];
+  if (V.res[id] !== undefined) return;
+  V.res[id] = ok; if (!ok) V.passWrong.add(id);
+  haptic(ok ? "ok" : "bad"); vSend(id, ok);
+  if (V.mode === "learn") vAdvance();
+  else renderVocab();
+}
+function vAdvance() {
+  const k = V.batch.findIndex((id) => V.res[id] === undefined);
+  V.flipped = false; V.picked = null;
+  if (k >= 0) V.i = k; else V.view = "sum";
+  renderVocab(); window.scrollTo({ top: 0 });
+}
+function vExit(msg) { V.mode = null; renderQuiz(); window.scrollTo({ top: 0 }); if (msg) toast(msg); }
+function vContinue() {
+  if (V.queue.length) { vNextBatch(); return renderVocab(); }
+  if (V.passWrong.size) { V.queue = shuffle([...V.passWrong]); V.passWrong = new Set(); vNextBatch(); return renderVocab(); }
+  vExit(V.mode === "learn" ? `Set ${V.set} tugadi 🎉` : "Takror tugadi 🎉");
+}
+
+function renderVocab() {
+  const el = $("vocab");
+  if (!V.words) {
+    if (!V.loading) loadVocab();
+    el.innerHTML = `<div class="sk" style="height:250px;border-radius:30px;margin-top:14px"></div><div class="sk" style="height:76px"></div><div class="sk" style="height:200px"></div>`;
+    return;
+  }
+  if (!V.mode) return vHome(el);
+  if (V.view === "sum") return vSummary(el);
+  const id = V.batch[V.i], w = vById(id);
+  const bar = V.batch.map((x, k) => `<i class="${V.res[x] === true ? "ok" : V.res[x] === false ? "no" : k === V.i ? "cur" : ""}"></i>`).join("");
+  const label = V.mode === "learn" ? `Set ${V.set}` : "Takror";
+  let h = `<div class="vs-top"><button class="xbtn" id="vX" aria-label="Chiqish">×</button><div class="vs-bar">${bar}</div><span class="vs-l">${label} · ${V.i + 1}/${V.batch.length}</span></div>`;
+  const ant = w.ant ? `<div class="fc-ant"><span>Antonim</span><b>${esc(w.ant)}</b>${w.ant_uz ? ` — ${esc(w.ant_uz)}` : ""}</div>` : "";
+  if (V.mode === "learn") {
+    h += `<div class="fc enter ${V.flipped ? "flip" : ""}" id="fc" role="button" aria-label="Kartani aylantirish"><div class="fc-in">
+      <div class="fc-face fc-front"><span class="fc-pos">${esc(w.pos || "so'z")}</span>
+        <div class="fc-mid"><div class="fc-word">${esc(w.word)}</div>${w.alt ? `<div class="fc-alt">${esc(w.alt)}</div>` : ""}</div>
+        <div class="fc-tap">Bosing — tarjimasi ${ICON.arrow}</div></div>
+      <div class="fc-face fc-back"><span class="fc-pos">${esc(w.word)}</span>
+        <div class="fc-mid"><div class="fc-uz">${esc(w.uz)}</div>${w.more ? `<div class="fc-more">${esc(w.more)}</div>` : ""}
+          ${w.hint ? `<div class="fc-hint">💡 ${esc(w.hint)}</div>` : ""}${w.example ? `<div class="fc-more"><i>${esc(w.example)}</i></div>` : ""}</div>${ant}</div>
+    </div></div>
+    <div class="grid2" style="gap:10px"><button class="btn soft big" id="vNo">Takrorlayman</button><button class="btn dark big" id="vYes">Bilaman</button></div>`;
+  } else {
+    const o = V.opts[id] || (V.opts[id] = vMakeOpts(id, "en")), en = o.dir === "en", A = V.res[id];
+    h += `<div class="vq enter"><span class="fc-pos">${en ? esc(w.pos || "so'z") : "o'zbekcha"}</span>
+      <div class="fc-word">${esc(en ? w.word : w.uz)}</div><div class="vq-ask">${en ? "Tarjimasini tanlang" : "Inglizchasini tanlang"}</div></div>`;
+    h += o.ids.map((x, k) => {
+      const ww = vById(x), cls = A === undefined ? "" : x === id ? "right" : x === V.picked ? "wrong" : "";
+      return `<button class="opt ${A !== undefined ? "locked" : ""} ${cls}" data-vo="${x}"><span class="L">${"ABCD"[k]}</span><span>${esc(en ? ww.uz : ww.word)}</span></button>`;
+    }).join("");
+    if (A !== undefined) h += `<div class="vq-res"><div class="vq-v">${esc(w.word)} — ${esc(w.uz)}</div>${w.more ? `<div>${esc(w.more)}</div>` : ""}
+        ${w.ant ? `<div style="margin-top:6px">Antonim: <b>${esc(w.ant)}</b>${w.ant_uz ? ` — ${esc(w.ant_uz)}` : ""}</div>` : ""}${w.hint ? `<div style="margin-top:6px">💡 ${esc(w.hint)}</div>` : ""}</div>
+      <button class="btn dark big" style="margin-top:12px" id="vNext">${V.batch.some((x) => V.res[x] === undefined) ? "Keyingi" : "Natija"}</button>`;
+  }
+  el.innerHTML = h;
+  $("vX").onclick = () => { haptic(); vExit(); };
+  if ($("fc")) $("fc").onclick = () => { V.flipped = !V.flipped; $("fc").classList.remove("enter"); $("fc").classList.toggle("flip", V.flipped); haptic(); };
+  if ($("vYes")) $("vYes").onclick = () => vAnswer(true);
+  if ($("vNo")) $("vNo").onclick = () => vAnswer(false);
+  if ($("vNext")) $("vNext").onclick = vAdvance;
+  el.querySelectorAll("[data-vo]").forEach((b) => b.onclick = () => { if (V.res[id] !== undefined) return; V.picked = +b.dataset.vo; vAnswer(V.picked === id); });
+}
+
+function vSummary(el) {
+  const ok = V.batch.filter((x) => V.res[x] === true).length, no = V.batch.length - ok;
+  const left = V.queue.length, lastOfPass = !left;
+  const title = lastOfPass && !V.passWrong.size ? (V.mode === "learn" ? `Set ${V.set} tugadi!` : "Takror tugadi!") : "Takrorlash tugadi!";
+  const emo = no === 0 ? "🎉" : ok >= no ? "💪" : "🌱";
+  const cont = left ? "Davom etish" : V.passWrong.size ? "Bilmaganlarimni takrorlash" : "Tayyor";
+  el.innerHTML = `<div class="vs-top"><button class="xbtn" id="vX" aria-label="Chiqish">×</button><div class="vs-bar">${V.batch.map((x) => `<i class="${V.res[x] ? "ok" : "no"}"></i>`).join("")}</div><span class="vs-l">${V.mode === "learn" ? `Set ${V.set}` : "Takror"}</span></div>
+    <div class="vsum"><div class="emo">${emo}</div><h2>${title}</h2><div class="sub">${no === 0 ? "Hammasini bildingiz" : `${no} ta so'z ertaga yana chiqadi`}</div>
+    <div class="vsum-t"><div class="ok"><b>${ok}</b><span>To'g'ri</span></div><div class="no"><b>${no}</b><span>Xato</span></div></div>
+    <div class="vsum-left"><span>Qolgan kartalar</span>${left}${V.passWrong.size && !left ? ` · takrorga ${V.passWrong.size}` : ""}</div>
+    <div class="vsum-w">${V.batch.map((x) => `<span class="${V.res[x] ? "ok" : "no"}">${esc(vById(x).word)}</span>`).join("")}</div>
+    <div class="grid2"><button class="btn soft big" id="vAgain">Kartalarni qaytarish</button><button class="btn soft big" id="vDone">Tugatish</button></div>
+    <button class="btn dark big" id="vCont">${cont}</button></div>`;
+  $("vX").onclick = () => { haptic(); vExit(); };
+  $("vAgain").onclick = () => { Object.assign(V, { i: 0, res: {}, flipped: false, picked: null, view: "card" }); haptic(); renderVocab(); };
+  $("vDone").onclick = () => { haptic(); vExit(); };
+  $("vCont").onclick = () => { haptic(); vContinue(); window.scrollTo({ top: 0 }); };
+}
+
+function vHome(el) {
+  const s = vsum(), nx = s.next_set, nxs = s.sets.find((x) => x.set_no === nx);
+  el.innerHTML = `<div class="vhero">
+      <div class="now-head"><div><span class="now-tag ${s.due ? "" : "idle"}"><i></i>Bugungi lug'at</span><span class="now-time">1 yangi set + takror</span></div>${s.total ? ring(s.seen, s.total, Math.round((100 * s.seen) / s.total) + "%") : ""}</div>
+      <div class="vh-row"><div class="vh-box"><b>${s.due}</b><span>${s.due ? "so'z takrorni kutmoqda" : "takror yo'q"}</span></div>
+        <div class="vh-box"><b>${nx ? "Set " + nx : "✓"}</b><span>${nx ? `${nxs.seen}/${nxs.n} ko'rilgan` : "hamma set ko'rilgan"}</span></div></div>
+      ${s.due ? `<button class="btn go" id="vRev">Takrorni boshlash</button>` : ""}
+      ${nx ? `<button class="btn ${s.due ? "go2" : "go"}" id="vNew">Set ${nx} — yangi so'zlar</button>` : ""}
+      ${!s.due && !nx ? `<div class="now-note">Hammasi joyida. Yangi so'zlarni Claude'ga yuboring.</div>` : ""}
+    </div>
+    <div class="card vstat"><div><b>${s.seen}</b><span>o'rganilgan</span></div><div><b>${s.mastered}</b><span>mustahkam</span></div><div><b>${s.total}</b><span>jami so'z</span></div></div>
+    <div class="card"><div class="card-h"><h3>Setlar</h3><span class="hint">bosib o'rganing</span></div>
+      <div class="vsets">${s.sets.map((x) => {
+        const full = x.known === x.n, p = Math.round((100 * x.known) / Math.max(1, x.n));
+        return `<button class="vset ${full ? "full" : x.set_no === nx ? "next" : ""}" data-vset="${x.set_no}"><div class="vs-h">Set ${x.set_no}<span>${full ? ICON.check : x.set_no === nx ? '<span class="tag lime" style="margin:0">navbatda</span>' : ""}</span></div>
+          <div class="vs-s">${x.known}/${x.n} biladi${x.mastered ? ` · ${x.mastered} mustahkam` : ""}</div><div class="mini"><i style="width:${p}%"></i></div></button>`;
+      }).join("") || emptyBox(ICON.read, "Hali so'z yo'q. Claude'ga so'zlarni yuboring — tarjimasi bilan qo'shadi.")}</div>
+      <p class="lead" style="margin:14px 2px 0">Yangi so'zlarni Claude'ga yozing — tarjimasi bilan shu yerga qo'shiladi.</p></div>`;
+  if ($("vRev")) $("vRev").onclick = () => vStart("review");
+  if ($("vNew")) $("vNew").onclick = () => vStart("learn", nx);
+  el.querySelectorAll("[data-vset]").forEach((b) => b.onclick = () => vStart("learn", +b.dataset.vset));
 }
 
 /* ---------- MISTAKES ---------- */
@@ -988,7 +1260,7 @@ function go(v) {
   document.querySelectorAll(".view").forEach((x) => x.classList.toggle("on", x.id === v));
   document.querySelectorAll(".nav button").forEach((b) => b.classList.toggle("on", b.dataset.v === v));
   window.scrollTo({ top: 0 });
-  if (v === "v-quiz" && !Q.cur && !Q.loading) loadQuiz();
+  if (v === "v-quiz") { if (Q.section === "vocab") renderQuiz(); else if (!Q.cur && !Q.loading) loadQuiz(); }
   if (tg.BackButton) v === "v-home" ? tg.BackButton.hide() : tg.BackButton.show();
   haptic();
 }
@@ -997,16 +1269,29 @@ document.addEventListener("click", async (e) => {
   const el = e.target.closest("button");
   if (!el || el.closest("#sheet")) return; // sheet buttons have their own handlers
   if (el.dataset.v) return go(el.dataset.v);
+  if (el.dataset.vocab) { Q.section = "vocab"; V.mode = null; }
   if (el.dataset.go) return go(el.dataset.go);
   if (el.dataset.sheet) return openSheet(el.dataset.sheet);
   if (el.dataset.testm) return openSheet("testm", +el.dataset.testm);
-  if (el.dataset.mark) { el.disabled = true; el.textContent = "…"; return act({ action: "mark", key: el.dataset.mark, status: "done" }, "Blok boshlandi"); }
+  if (el.dataset.mark) {
+    const key = el.dataset.mark;
+    el.disabled = true; el.textContent = "…";
+    const r = await act({ action: "mark", key, status: "done" });
+    if (!r) return;
+    if (r.status === "late") { toast("05:15 o'tdi — bugun streak hisoblanmaydi"); haptic("bad"); }
+    else toast(key === WAKE ? "Xayrli tong! ☀️" : "Blok boshlandi");
+    if (VOCAB_KEYS.includes(key)) { Q.section = "vocab"; V.mode = null; go("v-quiz"); }
+    return;
+  }
   if (el.dataset.resolve) { el.disabled = true; openMx = null; return act({ action: "mistake_resolve", id: el.dataset.resolve }, "Xato yopildi"); }
   if (el.dataset.mx) { const id = +el.dataset.mx; openMx = openMx === id ? null : id; haptic(); return renderBook(); }
   if (el.dataset.opt !== undefined) return answerQuiz(+el.dataset.opt);
   if (el.id === "qNext") return loadQuiz();
   if (el.id === "tlMore") { tlOpen = !tlOpen; haptic(); return renderTimeline(); }
-  if (el.closest("#qSeg") && el.dataset.s) { if (Q.section !== el.dataset.s) { Q.section = el.dataset.s; haptic(); loadQuiz(); } return; }
+  if (el.closest("#qSeg") && el.dataset.s) {
+    if (Q.section !== el.dataset.s) { Q.section = el.dataset.s; haptic(); if (Q.section === "vocab") { V.mode = null; renderQuiz(); } else loadQuiz(); }
+    return;
+  }
   if (el.closest("#bSeg") && el.dataset.s) { bookFilter = el.dataset.s; renderBook(); haptic(); }
 });
 $("scrim").addEventListener("click", closeSheet);
@@ -1033,7 +1318,7 @@ async function main() {
     if (mobile && tg.isVersionAtLeast && tg.isVersionAtLeast("8.0") && !tg.isFullscreen) tg.requestFullscreen();
     if (tg.isVersionAtLeast && tg.isVersionAtLeast("7.7")) tg.disableVerticalSwipes();
   } catch (e) {}
-  if (tg.BackButton) tg.BackButton.onClick(() => { if ($("sheet").classList.contains("on")) closeSheet(); else go("v-home"); });
+  if (tg.BackButton) tg.BackButton.onClick(() => { if ($("sheet").classList.contains("on")) closeSheet(); else if (VIEW === "v-quiz" && Q.section === "vocab" && V.mode) vExit(); else go("v-home"); });
   if (tg.onEvent) {
     tg.onEvent("activated", refresh); // back to the panel: fresh numbers
   }

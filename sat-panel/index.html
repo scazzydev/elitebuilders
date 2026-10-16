@@ -1012,8 +1012,15 @@ function setupHomeScreen() {
   const hide = () => { card.hidden = true; };
   $("hsBtn").onclick = () => { haptic(); try { tg.addToHomeScreen(); } catch (e) { toast("Telegram bu qurilmada ruxsat bermadi"); } };
   tg.onEvent("homeScreenAdded", () => { hide(); toast("Bosh ekranga qo'shildi"); haptic("ok"); });
+  // Android only allows shortcuts for the bot's Main Mini App (opened from the bot profile / ?startapp link)
+  const viaMainApp = () => {
+    $("hsSub").textContent = "Panelni bot profilidagi «Ilovani ochish» orqali oching — keyin qo'shish mumkin bo'ladi";
+    $("hsBtn").textContent = "Ochish";
+    $("hsBtn").onclick = () => { haptic(); tg.openTelegramLink("https://t.me/OrbitMLbot?startapp"); };
+    card.hidden = false;
+  };
   try {
-    tg.checkHomeScreenStatus((st) => { card.hidden = st === "added" || st === "unsupported"; });
+    tg.checkHomeScreenStatus((st) => { if (st === "added") hide(); else if (st === "unsupported") viaMainApp(); else card.hidden = false; });
   } catch (e) { card.hidden = false; }
 }
 

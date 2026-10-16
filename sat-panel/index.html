@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SAT Panel</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: var(--tg-theme-bg-color, #0f1115);
+    --card: var(--tg-theme-secondary-bg-color, #181b22);
+    --text: var(--tg-theme-text-color, #eef0f4);
+    --hint: var(--tg-theme-hint-color, #8b93a3);
+    --accent: var(--tg-theme-button-color, #3b82f6);
+    --good: #22c55e;
+    --warn: #f59e0b;
+    --bad: #ef4444;
+    --line: color-mix(in srgb, var(--hint) 28%, transparent);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 14px 14px 32px;
+  }
+  .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 4px 2px 14px; }
+  .hero .big { font-size: 46px; font-weight: 800; line-height: 1; letter-spacing: -1px; }
+  .hero .sub { color: var(--hint); font-size: 13px; margin-top: 4px; }
+  .pill { background: var(--card); border-radius: 999px; padding: 8px 12px; font-weight: 700; white-space: nowrap; }
+  .pill small { color: var(--hint); font-weight: 500; }
+  .card { background: var(--card); border-radius: 16px; padding: 14px; margin-bottom: 12px; }
+  .card h2 { margin: 0 0 2px; font-size: 15px; }
+  .card .lead { color: var(--hint); font-size: 13px; margin: 0 0 10px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .stat { background: var(--card); border-radius: 14px; padding: 10px; }
+  .stat b { display: block; font-size: 20px; }
+  .stat span { color: var(--hint); font-size: 12px; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  svg text { fill: var(--hint); font-size: 10px; }
+  .row { display: grid; grid-template-columns: 1fr 52px; align-items: center; gap: 8px; margin: 7px 0; font-size: 13px; }
+  .row .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar { height: 6px; border-radius: 4px; background: var(--line); margin-top: 4px; overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 4px; }
+  .row .v { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .tag { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 6px; background: var(--line); color: var(--hint); margin-right: 4px; }
+  .plan div { margin: 4px 0; font-size: 14px; }
+  .plan .when { color: var(--hint); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-top: 10px; }
+  .empty { color: var(--hint); font-size: 13px; padding: 8px 0; }
+  .legend { display: flex; gap: 12px; font-size: 12px; color: var(--hint); margin-top: 6px; flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 10px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+  #msg { color: var(--hint); text-align: center; padding: 40px 10px; }
+</style>
+</head>
+<body>
+<div id="msg">Yuklanmoqda…</div>
+<div id="app" hidden>
+  <div class="hero">
+    <div>
+      <div class="big" id="satDays">–</div>
+      <div class="sub" id="satSub">SAT'gacha kun</div>
+    </div>
+    <div class="pill" id="streak">🔥 0 <small>kun</small></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="sLast">–</b><span>oxirgi test</span></div>
+    <div class="stat"><b id="sGap">–</b><span>1300 gacha</span></div>
+    <div class="stat"><b id="sMist">–</b><span>ochiq xato</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Practice test ballari</h2>
+    <p class="lead" id="ballLead">Reja bo'yicha maqsadlar bilan solishtirilgan.</p>
+    <div id="ballChart"></div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>Sizning ball</span><span><i style="background:var(--hint)"></i>Reja maqsadi</span><span><i style="background:var(--good)"></i>1300</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Kunlik bajarilish</h2>
+    <p class="lead" id="doneLead">Boshlangan bloklar ulushi, oxirgi 21 kun. Chiziq — 75% (streak uchun).</p>
+    <div id="doneChart"></div>
+  </div>
+
+  <div class="card">
+    <h2>Aniqlik</h2>
+    <p class="lead" id="accLead">Kechki raqamlardan: to'g'ri / yechilgan.</p>
+    <div id="accChart"></div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>Math</span><span><i style="background:var(--warn)"></i>R&amp;W</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Zaif mavzular</h2>
+    <p class="lead">Xatolar daftari va tekshiruv savollaridan. Eng zaifi tepada.</p>
+    <div id="weak"></div>
+  </div>
+
+  <div class="card plan">
+    <h2>Reja</h2>
+    <div id="plan"></div>
+  </div>
+</div>
+
+<script>
+const FN_URL = "https://zspkdcvauqthfvucbbfa.supabase.co/functions/v1/routine-bot";
+const tg = window.Telegram && window.Telegram.WebApp;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const DAY = 86400000;
+const t = (d) => Date.parse(d + "T00:00:00Z");
+const fmt = (d) => { const x = new Date(t(d)); return x.getUTCDate() + "." + String(x.getUTCMonth() + 1).padStart(2, "0"); };
+
+// Milestones from the plan (Saturday tests)
+const MILESTONES = [["2026-11-07", 1050], ["2026-11-14", 1100], ["2026-11-21", 1180], ["2026-11-28", 1250], ["2026-12-02", 1280], ["2026-12-06", 1300]];
+
+function lineChart(el, { start, end, ymin, ymax, series, hlines = [], ticks = null, w = 340, h = 180 }) {
+  const L = 34, R = 8, T = 10, B = 22;
+  const x = (d) => L + ((t(d) - t(start)) / (t(end) - t(start))) * (w - L - R);
+  const y = (v) => T + (1 - (v - ymin) / (ymax - ymin)) * (h - T - B);
+  let s = `<svg viewBox="0 0 ${w} ${h}" role="img">`;
+  const yt = ticks || [0, 1, 2, 3, 4].map((i) => ymin + ((ymax - ymin) / 4) * i);
+  for (const v of yt) {
+    s += `<line x1="${L}" x2="${w - R}" y1="${y(v)}" y2="${y(v)}" stroke="${css("--line")}" />`;
+    s += `<text x="${L - 4}" y="${y(v) + 3}" text-anchor="end">${Math.round(v)}${series.pct ? "%" : ""}</text>`;
+  }
+  const xt = 5;
+  for (let i = 0; i <= xt; i++) {
+    const d = new Date(t(start) + ((t(end) - t(start)) * i) / xt).toISOString().slice(0, 10);
+    s += `<text x="${x(d)}" y="${h - 6}" text-anchor="middle">${fmt(d)}</text>`;
+  }
+  for (const hl of hlines) {
+    s += `<line x1="${L}" x2="${w - R}" y1="${y(hl.v)}" y2="${y(hl.v)}" stroke="${hl.color}" stroke-width="1.5" stroke-dasharray="${hl.dash || ""}" />`;
+  }
+  for (const sr of series.list) {
+    if (!sr.points.length) continue;
+    const pts = sr.points.map((p) => `${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join(" ");
+    s += `<polyline points="${pts}" fill="none" stroke="${sr.color}" stroke-width="${sr.width || 2.5}" stroke-dasharray="${sr.dash || ""}" stroke-linejoin="round" stroke-linecap="round" />`;
+    if (sr.dots) for (const p of sr.points) {
+      s += `<circle cx="${x(p[0])}" cy="${y(p[1])}" r="4" fill="${sr.color}" />`;
+      if (sr.labels) { const lx = x(p[0]); const a = lx < L + 14 ? "start" : lx > w - R - 14 ? "end" : "middle";
+        s += `<text x="${lx}" y="${y(p[1]) - 8}" text-anchor="${a}" style="fill:${css("--text")};font-weight:700">${p[1]}</text>`; }
+    }
+  }
+  el.innerHTML = s + "</svg>";
+}
+
+function render(d) {
+  $("satDays").textContent = d.sat_days > 0 ? d.sat_days : d.sat_days === 0 ? "Bugun!" : "✓";
+  $("satSub").textContent = d.sat_days > 0 ? `kun SAT'gacha · maqsad ${d.target}+` : "SAT";
+  $("streak").innerHTML = `🔥 ${d.streak} <small>kun · rekord ${d.best_streak}</small>`;
+
+  const balls = d.balls;
+  const last = balls.length ? balls[balls.length - 1].value : null;
+  $("sLast").textContent = last ?? "–";
+  $("sGap").textContent = last ? Math.max(0, d.target - last) : "–";
+  const openM = d.mistakes.reduce((a, m) => a + m.open, 0);
+  $("sMist").textContent = openM;
+
+  // Scores vs plan milestones
+  if (balls.length) {
+    const vals = balls.map((b) => b.value).concat(MILESTONES.map((m) => m[1]));
+    const ymin = Math.max(400, Math.floor((Math.min(...vals) - 50) / 100) * 100);
+    const stepY = 1400 - ymin > 600 ? 200 : 100;
+    const ticks = []; for (let v = 1400; v >= ymin; v -= stepY) ticks.unshift(v);
+    lineChart($("ballChart"), {
+      start: "2026-10-17", end: "2026-12-06", ymin: ticks[0], ymax: 1400, ticks,
+      hlines: [{ v: d.target, color: css("--good"), dash: "4 3" }],
+      series: { list: [
+        { points: MILESTONES, color: css("--hint"), dash: "5 4", width: 1.5, dots: false },
+        { points: balls.map((b) => [b.day, b.value]), color: css("--accent"), dots: true, labels: true },
+      ] },
+    });
+    const next = MILESTONES.find((m) => t(m[0]) >= t(d.today));
+    $("ballLead").textContent = next ? `Keyingi maqsad: ${fmt(next[0])} — ${next[1]}+.` : "Reja maqsadlari bilan solishtirilgan.";
+  } else {
+    $("ballChart").innerHTML = `<div class="empty">Hali ball yo'q. Testdan keyin botga yozing: <b>/ball 1050</b></div>`;
+  }
+
+  // Daily completion, last 21 days
+  const days = d.days.filter((x) => t(x.day) > t(d.today) - 21 * DAY);
+  if (days.length) {
+    const w = 340, h = 120, L = 28, B = 18, T = 6, n = 21;
+    const bw = (w - L) / n;
+    let s = `<svg viewBox="0 0 ${w} ${h}">`;
+    const y = (p) => T + (1 - p) * (h - T - B);
+    for (const p of [0, 0.5, 1]) s += `<text x="${L - 4}" y="${y(p) + 3}" text-anchor="end">${p * 100}%</text>`;
+    s += `<line x1="${L}" x2="${w}" y1="${y(0.75)}" y2="${y(0.75)}" stroke="${css("--good")}" stroke-dasharray="4 3" />`;
+    for (let i = 0; i < n; i++) {
+      const day = new Date(t(d.today) - (n - 1 - i) * DAY).toISOString().slice(0, 10);
+      const r = days.find((x) => x.day === day);
+      const xx = L + i * bw + 2;
+      if (i % 5 === 0 || i === n - 1) s += `<text x="${xx + bw / 2 - 2}" y="${h - 4}" text-anchor="middle">${fmt(day)}</text>`;
+      if (!r) continue;
+      if (r.rest || !r.total) { s += `<rect x="${xx}" y="${y(1)}" width="${bw - 4}" height="${y(0) - y(1)}" rx="3" fill="${css("--line")}" />`; continue; }
+      const p = r.done / r.total;
+      const col = p >= 0.75 ? css("--good") : p >= 0.5 ? css("--warn") : css("--bad");
+      s += `<rect x="${xx}" y="${y(p)}" width="${bw - 4}" height="${Math.max(2, y(0) - y(p))}" rx="3" fill="${col}" />`;
+    }
+    $("doneChart").innerHTML = s + "</svg>";
+    const active = days.filter((x) => !x.rest && x.total);
+    const good = active.filter((x) => x.done / x.total >= 0.75).length;
+    $("doneLead").textContent = `${active.length} kundan ${good} tasida maqsadga yetildi (75%+). Kulrang — dam kuni.`;
+  } else {
+    $("doneChart").innerHTML = `<div class="empty">Birinchi kun tugagach shu yerda ko'rinadi.</div>`;
+  }
+
+  // Accuracy from evening numbers
+  const work = d.work.filter((x) => x.math_done + x.rw_done > 0);
+  if (work.length) {
+    const start = work[0].day === work[work.length - 1].day ? new Date(t(work[0].day) - DAY).toISOString().slice(0, 10) : work[0].day;
+    lineChart($("accChart"), {
+      start, end: work[work.length - 1].day, ymin: 0, ymax: 100, h: 150,
+      hlines: [],
+      series: { pct: true, list: [
+        { points: work.filter((x) => x.math_done).map((x) => [x.day, Math.round((100 * x.math_ok) / x.math_done)]), color: css("--accent"), dots: true },
+        { points: work.filter((x) => x.rw_done).map((x) => [x.day, Math.round((100 * x.rw_ok) / x.rw_done)]), color: css("--warn"), dots: true },
+      ] },
+    });
+    const tot = work.reduce((a, x) => a + x.math_done + x.rw_done, 0);
+    $("accLead").textContent = `Jami ${tot} ta savol yechildi, ${work.length} kun hisoboti.`;
+  } else {
+    $("accChart").innerHTML = `<div class="empty">22:45 dagi so'rovga 4 ta son yozing: <b>45 38 30 24</b></div>`;
+  }
+
+  // Weak topics: mistakes + quiz accuracy
+  const map = new Map();
+  for (const m of d.mistakes) map.set(m.section + "|" + m.topic, { section: m.section, topic: m.topic, open: m.open, n: 0, ok: 0 });
+  for (const q of d.quiz) {
+    const k = q.section + "|" + q.topic;
+    const a = map.get(k) || { section: q.section, topic: q.topic, open: 0, n: 0, ok: 0 };
+    a.n = q.n; a.ok = q.ok; map.set(k, a);
+  }
+  const rows = [...map.values()]
+    .map((r) => ({ ...r, acc: r.n ? r.ok / r.n : null, score: r.open * 2 + (r.n ? (1 - r.ok / r.n) * r.n : 0) }))
+    .filter((r) => r.open > 0 || (r.acc !== null && r.acc < 1))
+    .sort((a, b) => b.score - a.score).slice(0, 8);
+  $("weak").innerHTML = rows.length ? rows.map((r) => {
+    const acc = r.acc === null ? null : Math.round(r.acc * 100);
+    const col = acc === null ? css("--bad") : acc >= 75 ? css("--good") : acc >= 50 ? css("--warn") : css("--bad");
+    return `<div class="row"><div><div class="name"><span class="tag">${r.section === "math" ? "Math" : "R&amp;W"}</span>${esc(r.topic)}</div>
+      <div class="bar"><i style="width:${acc ?? 15}%;background:${col}"></i></div></div>
+      <div class="v">${acc === null ? r.open + " xato" : acc + "%"}</div></div>`;
+  }).join("") : `<div class="empty">Hozircha zaif mavzu yo'q. Tekshiruv savollari va /xato shu yerni to'ldiradi.</div>`;
+
+  // Today / tomorrow
+  const label = { weekday: "O'qish kuni", wstudy: "Dam olish kuni — o'qish", test: "Practice test", review: "Takror kuni", etest: "Kechqurun test", light: "Yengil kun", rest: "Dam kuni", exam: "SAT kuni", prep: "Tayyorgarlik" };
+  $("plan").innerHTML = d.plans.length ? d.plans.map((p) => `
+    <div class="when">${p.day === d.today ? "Bugun" : "Ertaga"} · ${fmt(p.day)} · ${label[p.kind] || p.kind}</div>
+    ${p.math ? `<div>📐 ${esc(p.math)}</div>` : ""}${p.grammar ? `<div>📘 ${esc(p.grammar)}</div>` : ""}
+    ${p.reading ? `<div>📖 ${esc(p.reading)}</div>` : ""}${p.evening ? `<div>🌙 ${esc(p.evening)}</div>` : ""}`).join("")
+    : `<div class="empty">Reja tugadi.</div>`;
+}
+
+async function main() {
+  if (tg) { tg.ready(); tg.expand(); }
+  const initData = tg && tg.initData;
+  if (!initData) { $("msg").textContent = "Bu panel faqat Telegram bot ichida ochiladi: botda /panel yozing."; return; }
+  try {
+    const r = await fetch(FN_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData }) });
+    if (r.status === 403) { $("msg").textContent = "Ruxsat yo'q: panel faqat bot egasi uchun."; return; }
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+    $("msg").hidden = true; $("app").hidden = false;
+    render(d);
+  } catch (e) {
+    $("msg").textContent = "Ma'lumot yuklanmadi. Keyinroq qayta oching.";
+  }
+}
+main();
+</script>
+</body>
+</html>

@@ -96,10 +96,8 @@
   .tile.hl span.lbl { opacity: 1; }
   .badge { position: absolute; top: 8px; right: 10px; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 99px; background: var(--coral); color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; }
   .chip { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 8px; flex: none; }
-  .purple { background: var(--c-purple); color: var(--i-purple); }
-  .blue { background: var(--c-blue); color: var(--i-blue); }
-  .orange { background: var(--c-orange); color: var(--i-orange); }
-  .mint { background: var(--c-mint); color: var(--i-mint); }
+  .purple, .blue, .orange, .mint { background: var(--soft); color: var(--ink); }
+  .row .chip, .mx-head .chip { background: var(--card) !important; }
   .limechip { background: var(--lime-soft); color: var(--lime-ink); }
 
   .hs { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 14px; }
@@ -170,7 +168,23 @@
   .mini { height: 5px; border-radius: 9px; background: var(--line); margin-top: 6px; overflow: hidden; }
   .mini i { display: block; height: 100%; border-radius: 9px; }
   .v { font-size: 13px; font-weight: 800; }
-  .grp { font-size: 13px; font-weight: 800; color: var(--muted); margin: 16px 2px 0; }
+  .grp { font-size: 13px; font-weight: 800; color: var(--muted); margin: 18px 2px 2px; }
+  .brow { padding: 11px 2px 10px; border-top: 1px solid var(--line); }
+  .brow:first-child { border-top: 0; }
+  .brow-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 14.5px; font-weight: 700; }
+  .brow-top b { font-weight: 800; }
+  .brow-s { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+  .brow .mini { height: 6px; margin-top: 8px; }
+  .score-row { display: flex; align-items: baseline; gap: 12px; margin: 6px 0 10px; }
+  .score { font-family: var(--display); font-weight: 800; font-size: 46px; letter-spacing: -1.5px; line-height: 1; }
+  .score-l { font-size: 13px; font-weight: 600; color: var(--muted); line-height: 1.35; }
+  .miles span { background: var(--soft) !important; }
+  .miles span.hit { background: var(--lime) !important; color: var(--on-lime); }
+  .acc { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .acc div { background: var(--soft); border-radius: 18px; padding: 12px 14px; }
+  .acc b { display: block; font-family: var(--display); font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+  .acc span { font-size: 12px; font-weight: 700; color: var(--muted); }
+  .daytxt { display: flex; justify-content: space-between; }
 
   /* mistakes: expandable */
   .mx { background: var(--soft); border-radius: 18px; margin-top: 8px; overflow: hidden; }
@@ -325,26 +339,19 @@
 
     <div class="card hs" id="hsCard" hidden>
       <div class="chip limechip" style="margin:0">📲</div>
-      <div class="hs-txt"><b>Bosh ekranga qo'shish</b><span id="hsSub">Panel telefon ekranidan bir bosishda ochiladi</span></div>
+      <div class="hs-txt"><b>Bosh ekranga qo'shish</b><span id="hsSub">Panel bir bosishda ochiladi</span></div>
       <button class="btn dark" id="hsBtn">Qo'shish</button>
-    </div>
-
-    <div class="goal">
-      <div class="goal-row"><div><h3>Maqsad 1300+</h3><p id="goalSub"></p></div><div class="big" id="goalNow">—</div></div>
-      <div id="goalMeter"><div class="meter"><i id="goalBar" style="width:0%"></i></div>
-      <div class="meter-l"><span>400</span><span id="goalNext"></span><span>1300</span></div></div>
-      <div class="miles" id="goalMiles"></div>
-    </div>
-
-    <div class="card" id="matCard" hidden>
-      <div class="card-h"><h3>Bugungi material</h3><span class="hint" id="matHint"></span></div>
-      <div id="materials"></div>
     </div>
 
     <div class="card">
       <div class="card-h"><h3>Kun rejasi</h3><span class="hint" id="kindHint"></span></div>
       <div class="tl" id="timeline"></div>
       <button class="more" id="tlMore"></button>
+    </div>
+
+    <div class="card" id="matCard" hidden>
+      <div class="card-h"><h3>Bugungi material</h3><span class="hint" id="matHint"></span></div>
+      <div id="materials"></div>
     </div>
   </section>
 
@@ -361,7 +368,6 @@
     <div class="vtitle"><div><h2>Daftar</h2><div class="sub" id="bSub">—</div></div>
       <button class="roundbtn lime" data-sheet="mistake" aria-label="Xato qo'shish"><svg class="ico" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M12 5v14M5 12h14"/></svg></button></div>
     <button class="rev-strip" id="bRev" data-sheet="review" hidden><span style="background:none;padding:0;color:inherit;font-weight:700" id="bRevT"></span><span>Boshlash</span></button>
-    <div class="card"><div class="card-h"><h3>Eng zaif mavzular</h3><span class="hint">savollar va daftar</span></div><div id="weak"></div></div>
     <div class="card"><div class="card-h"><h3>Ochiq xatolar</h3><span class="hint" id="openHint"></span></div>
       <div class="seg small inset" id="bSeg" style="margin-top:12px"><button class="on" data-s="all">Hammasi</button><button data-s="math">Math</button><button data-s="rw">R&amp;W</button></div>
       <div id="mistakes"></div></div>
@@ -371,30 +377,26 @@
   <section class="view" id="v-stats">
     <div class="vtitle"><div><h2>Natijalar</h2><div class="sub" id="sSub">—</div></div></div>
     <div class="card">
-      <div class="card-h"><h3>SAT xaritasi</h3><span class="hint" id="mapHint"></span></div>
+      <div class="card-h"><h3>Ball</h3><span class="hint" id="ballHint"></span></div>
+      <div class="score-row"><span class="score" id="scoreNow"></span><span class="score-l" id="ballLead"></span></div>
+      <div id="ballChart"></div>
+      <div class="miles" id="ballMiles"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>SAT bo'limlari</h3><span class="hint" id="mapHint"></span></div>
       <p class="lead" id="mapLead"></p>
       <div id="oppBox"></div>
       <div id="satMap"></div>
+      <div class="grp">Practice testlar</div>
+      <div id="testList"></div>
     </div>
-    <div class="card"><div class="card-h"><h3>Practice testlar</h3><span class="hint" id="testHint"></span></div><div id="testList"></div></div>
+    <div class="card"><div class="card-h"><h3>Zaif mavzular</h3></div><div id="weak"></div></div>
     <div class="card">
-      <div class="card-h"><h3>Test ballari</h3><span class="hint" id="ballHint"></span></div>
-      <p class="lead" id="ballLead">Reja maqsadlari bilan solishtirilgan.</p>
-      <div id="ballChart"></div>
-      <div class="legend" id="ballLegend"><span><i style="background:var(--ink)"></i>Sizning ball</span><span><i style="background:var(--muted)"></i>Reja</span><span><i style="background:var(--lime2)"></i>1300</span></div>
-    </div>
-    <div class="card">
-      <div class="card-h"><h3>Kunlik bajarilish</h3><span class="hint">21 kun</span></div>
-      <p class="lead" id="doneLead">Bloklarning 75% i — streak uchun.</p>
+      <div class="card-h"><h3>Intizom</h3><span class="hint">21 kun</span></div>
+      <p class="lead" id="doneLead"></p>
       <div id="doneChart"></div>
+      <div class="acc" id="accRow"></div>
     </div>
-    <div class="card">
-      <div class="card-h"><h3>Aniqlik</h3><span class="hint" id="accHint"></span></div>
-      <p class="lead" id="accLead">Kechki hisobdan: to'g'ri / yechilgan.</p>
-      <div id="accChart"></div>
-      <div class="legend" id="accLegend"><span><i style="background:var(--ink)"></i>Math</span><span><i style="background:var(--lime2)"></i>R&amp;W</span></div>
-    </div>
-    <div class="card"><div class="card-h"><h3>Ertaga</h3><span class="hint" id="tmrHint"></span></div><div id="tomorrow"></div></div>
   </section>
 </div>
 
@@ -545,23 +547,14 @@ function renderHome() {
 
   // tiles: light up the one that needs attention now
   const rs = d.review_stats || { due: 0, mastered: 0, steps: 4 }, w = d.today_work;
-  $("tRevS").textContent = rs.due ? `${rs.due} ta kutmoqda` : "bugun bo'sh";
+  $("tRevS").textContent = rs.due ? `${rs.due} ta xato` : "yo'q";
   $("tRev").classList.toggle("hl", rs.due > 0);
   $("tRev").querySelector(".badge")?.remove();
   if (rs.due) $("tRev").insertAdjacentHTML("beforeend", `<i class="badge">${rs.due}</i>`);
-  $("tReport").textContent = w ? `${w.math_done + w.rw_done} ta savol` : "kiritilmagan";
+  $("tReport").textContent = w ? `${w.math_done + w.rw_done} savol` : "kiritish";
   $("tRep").classList.toggle("hl", !w && d.now_min >= 22 * 60 && (d.blocks || []).length > 0);
   const last = d.balls.length ? d.balls[d.balls.length - 1].value : null;
-  $("tBall").textContent = last ? `oxirgi ${last}` : "ball va xatolar";
-
-  // goal
-  const next = MILESTONES.find((m) => t(m[0]) >= t(d.today));
-  $("goalNow").textContent = last ?? "";
-  $("goalMeter").hidden = !last; $("goalMiles").hidden = !!last;
-  $("goalMiles").innerHTML = MILESTONES.map((m) => `<span><b>${fmt(m[0])}</b>${m[1]}</span>`).join("");
-  $("goalBar").style.width = last ? Math.min(100, Math.max(4, ((last - 400) / (d.target - 400)) * 100)) + "%" : "0%";
-  $("goalSub").textContent = !last ? "Reja bo'yicha yo'l — birinchi testdan keyin ballingiz shu yerda" : last >= d.target ? "Maqsadga yetdingiz — endi ushlab turing" : `${d.target - last} ball qoldi`;
-  $("goalNext").textContent = next && last && last < d.target ? `${fmt(next[0])} gacha ${next[1]}` : "";
+  $("tBall").textContent = last ? `${last}` : "kiritish";
 
   // materials
   const mats = d.materials || [];
@@ -570,7 +563,7 @@ function renderHome() {
   $("materials").innerHTML = mats.map((m, i) => {
     const icon = m.kind === "lesson" ? "🧑‍🏫" : m.section === "math" ? "📐" : m.section === "rw" ? "📘" : "📄";
     const sub = (m.kind === "lesson" ? "Kechagi xatolardan dars" : "Material") + (m.section !== "general" ? `, ${m.section === "math" ? "Math" : "R&W"}` : "");
-    return `<details class="mat ${m.kind === "lesson" ? "lesson" : ""}" ${i === 0 ? "open" : ""}><summary><div class="chip">${icon}</div>
+    return `<details class="mat ${m.kind === "lesson" ? "lesson" : ""}"><summary><div class="chip">${icon}</div>
       <div class="txt"><div class="t">${esc(m.title)}</div><div class="s">${esc(sub)}</div></div><span class="arr">${ICON.arrow}</span></summary>
       <div class="body">${richText(m.body)}</div></details>`;
   }).join("");
@@ -611,7 +604,7 @@ function renderNow() {
       ${w ? "" : `<div class="now-cta"><button class="btn lime big" data-sheet="report">Kechki hisobni kiritish</button></div>`}`;
   }
   const segs = bl.map((b, i) => `<i class="${b.status === "done" ? "done" : b.status === "skip" ? "skip" : b.status === "miss" ? "miss" : i === ci ? "cur" : ""}"></i>`).join("");
-  if (bl.length) h += `<div class="daybar">${segs}</div><div class="daytxt">${done} / ${bl.length} bajarildi${done >= goal ? " — streak saqlanadi" : `, streak uchun yana ${goal - done} ta`}</div>`;
+  if (bl.length) h += `<div class="daybar">${segs}</div><div class="daytxt"><span>${done} / ${bl.length} blok</span><span>${done >= goal ? "streak saqlandi" : `streakgacha ${goal - done} ta`}</span></div>`;
   $("now").innerHTML = h;
 }
 
@@ -697,16 +690,6 @@ function renderBook() {
   $("bRev").hidden = !rs.due;
   $("bRevT").textContent = `${rs.due} ta xato takrorni kutmoqda`;
   $("navDot").hidden = !rs.due;
-  const rows = weakRows(d, 5);
-  $("weak").innerHTML = rows.length ? rows.map((r) => {
-    const acc = r.acc === null ? null : Math.round(r.acc * 100);
-    const col = acc === null ? C.coral : acc >= 75 ? C.limeSoft : acc >= 50 ? C.amber : C.coral;
-    const sub = [r.open ? `${r.open} ta ochiq` : "", r.n ? `${r.ok}/${r.n} savol` : ""].filter(Boolean).join(", ");
-    return `<div class="row"><div class="chip ${r.section === "math" ? "purple" : "blue"}">${r.section === "math" ? ICON.math : ICON.rw}</div>
-      <div class="txt"><div class="t">${esc(r.topic)}</div><div class="s">${sub}</div><div class="mini"><i style="width:${acc ?? 12}%;background:${col}"></i></div></div>
-      <div class="v">${acc === null ? "" : acc + "%"}</div></div>`;
-  }).join("") : emptyBox(ICON.check, "Hozircha zaif mavzu yo'q. Mashq qiling yoki xato qo'shing.");
-
   document.querySelectorAll("#bSeg button").forEach((b) => b.classList.toggle("on", b.dataset.s === bookFilter));
   const list = open.filter((m) => bookFilter === "all" || m.section === bookFilter);
   $("openHint").textContent = `${list.length} ta`;
@@ -743,85 +726,88 @@ function domainRows(d) {
     return { k, dm, st, acc, tw, gain };
   }) };
 }
+const barCol = (a) => a === null ? C.rest : a >= 75 ? C.limeSoft : a >= 50 ? C.amber : C.coral;
+const brow = (name, sub, pct) => `<div class="brow"><div class="brow-top"><span>${esc(name)}</span><b>${pct === null ? "—" : pct + "%"}</b></div>
+  ${sub ? `<div class="brow-s">${esc(sub)}</div>` : ""}<div class="mini"><i style="width:${pct ?? 0}%;background:${barCol(pct)}"></i></div></div>`;
+
 function renderMap() {
   const d = D, { lt, rows } = domainRows(d);
   $("mapHint").textContent = lt ? `${lt.name || "test"}: ${lt.total}` : "";
   const newest = (d.tests || [])[0], partial = newest && newest !== lt && !testComplete(newest);
-  $("mapLead").textContent = (lt ? `${fmt(lt.day)} testidagi xatolar asosida. Ball — taxminiy.` : "Practice test xatolarini kiritgach aniq bo'ladi. Hozircha — savollar natijasi.")
-    + (partial ? ` Oxirgi testdan ${newest.wrong_total} ta xato kiritilgan (taxminan ${expectedWrong(newest)} ta bo'lishi kerak).` : "");
+  $("mapLead").textContent = lt ? "Oxirgi test xatolari asosida, taxminiy." : "Test xatolari kiritilgach aniq bo'ladi.";
+  if (partial) $("mapLead").textContent += ` Oxirgi testdan ${newest.wrong_total} / ~${expectedWrong(newest)} xato kiritilgan.`;
   const best = rows.filter((r) => r.gain >= 10).sort((a, b) => b.gain - a.gain)[0];
-  $("oppBox").innerHTML = best ? `<div class="opp">Eng katta imkoniyat: <b>${esc(best.dm.n)}</b>. Shu bo'limdagi xatolarni yarmiga tushirsangiz ≈ <b>+${best.gain} ball</b>.</div>` : "";
+  $("oppBox").innerHTML = best ? `<div class="opp">Eng katta imkoniyat: <b>${esc(best.dm.n)}</b> — xatolarni yarmiga tushirsangiz ≈ <b>+${best.gain} ball</b>.</div>` : "";
   const grp = (s, title) => `<div class="grp">${title}</div>` + rows.filter((r) => r.dm.s === s).map((r) => {
     const a = r.acc === null ? null : Math.round(r.acc * 100);
-    const col = a === null ? C.rest : a >= 75 ? C.limeSoft : a >= 50 ? C.amber : C.coral;
-    const sub = [`~${r.dm.q} savol`, r.tw !== null ? `testda ${r.tw} xato` : "", r.st.n ? `savollar ${r.st.ok}/${r.st.n}` : "", r.st.open ? `${r.st.open} ochiq` : ""].filter(Boolean).join(", ");
-    return `<div class="row"><div class="txt"><div class="t">${esc(r.dm.n)}</div><div class="s">${sub}</div><div class="mini"><i style="width:${a ?? 0}%;background:${col}"></i></div></div><div class="v">${a === null ? "—" : a + "%"}</div></div>`;
+    const sub = r.tw !== null ? `testda ${r.tw} xato` : r.st.n ? `${r.st.ok} / ${r.st.n} savol` : "";
+    return brow(r.dm.n, sub, a);
   }).join("");
   $("satMap").innerHTML = grp("math", "Math") + grp("rw", "Reading and Writing");
 
   const ts = d.tests || [];
-  $("testHint").textContent = ts.length ? `${ts.length} ta` : "";
-  $("testList").innerHTML = ts.length ? ts.map((x) => `<div class="row"><div class="chip orange">🏆</div>
-    <div class="txt"><div class="t">${esc(x.name || "Test")}: ${x.total}</div><div class="s">${fmt(x.day)}${x.math ? `, M ${x.math} / RW ${x.rw}` : ""}, ${x.wrong_total} / ~${expectedWrong(x)} xato kiritilgan</div></div>
+  $("testList").innerHTML = ts.length ? ts.map((x) => `<div class="row"><div class="txt"><div class="t">${esc(x.name || "Test")}: ${x.total}</div>
+    <div class="s">${fmt(x.day)}, ${x.wrong_total} / ~${expectedWrong(x)} xato kiritilgan</div></div>
     <button class="btn ghost" data-testm="${x.id}">+ Xato</button></div>`).join("")
-    : emptyBox(ICON.math, "Hali test yo'q. Asosiy sahifada <b>Practice test</b>: avval ball, keyin xatolar.");
+    : `<p class="lead" style="margin:6px 2px 0">Hali test yo'q. Asosiy sahifadagi <b>Practice test</b> orqali kiriting.</p>`;
 }
 
 /* ---------- STATS ---------- */
 function renderStats() {
   const d = D, balls = d.balls;
-  renderMap();
-  $("sSub").textContent = `${d.sat_days > 0 ? d.sat_days + " kun qoldi, " : ""}rekord streak ${d.best_streak}`;
+  $("sSub").textContent = d.sat_days > 0 ? `SAT'gacha ${d.sat_days} kun` : "";
+
+  // score: current number, next milestone, chart once there is a score, planned path as chips
   const last = balls.length ? balls[balls.length - 1].value : null, first = balls.length ? balls[0].value : null;
-  const next = MILESTONES.find((m) => t(m[0]) >= t(d.today));
-  if (balls.length) {
-    $("ballLegend").hidden = false;
+  const next = MILESTONES.find((m) => t(m[0]) >= t(d.today) && (!last || m[1] > last));
+  $("scoreNow").textContent = last ?? "";
+  $("scoreNow").hidden = !last;
+  $("ballLead").innerHTML = !last ? "Birinchi practice testdan keyin ballingiz shu yerda ko'rinadi." :
+    last >= d.target ? "Maqsadga yetdingiz. Endi ushlab turing." : `1300 gacha <b>${d.target - last}</b> ball${next ? `<br>Keyingi: ${fmt(next[0])} — ${next[1]}` : ""}`;
+  $("ballHint").textContent = balls.length > 1 ? `${last - first >= 0 ? "+" : ""}${last - first}` : "";
+  if (balls.length > 1) {
     const vals = balls.map((b) => b.value).concat(MILESTONES.map((m) => m[1]));
     const lo = Math.max(400, Math.floor((Math.min(...vals) - 50) / 100) * 100), step = 1400 - lo > 600 ? 200 : 100;
     const ticks = []; for (let v = 1400; v >= lo; v -= step) ticks.unshift(v);
-    lineChart($("ballChart"), { start: "2026-10-17", end: "2026-12-06", ymin: ticks[0], ymax: 1400, ticks, hlines: [{ v: d.target, color: C.lime }],
+    lineChart($("ballChart"), { start: "2026-10-17", end: "2026-12-06", ymin: ticks[0], ymax: 1400, ticks, h: 170, hlines: [{ v: d.target, color: C.lime }],
       series: [{ id: "p", points: MILESTONES, color: C.plan, dash: "5 5", width: 2 }, { id: "b", points: balls.map((b) => [b.day, b.value]), color: C.ink, dots: true, labels: true, area: true }] });
-    $("ballHint").textContent = balls.length > 1 ? `${last - first >= 0 ? "+" : ""}${last - first} ball` : "";
-    $("ballLead").textContent = next ? `Keyingi maqsad: ${fmt(next[0])} gacha ${next[1]}+` : "Reja maqsadlari bilan solishtirilgan.";
-  } else {
-    $("ballLegend").hidden = true; $("ballHint").textContent = "";
-    $("ballChart").innerHTML = emptyBox(ICON.math, "Hali ball yo'q. Asosiy sahifadagi <b>Practice test</b> orqali kiriting.");
-  }
+  } else $("ballChart").innerHTML = "";
+  $("ballMiles").innerHTML = MILESTONES.map((m) => `<span class="${last && last >= m[1] ? "hit" : ""}"><b>${fmt(m[0])}</b>${m[1]}</span>`).join("");
 
+  renderMap();
+
+  // weak topics
+  const rows = weakRows(d, 5);
+  $("weak").innerHTML = rows.length ? rows.map((r) => {
+    const a = r.acc === null ? null : Math.round(r.acc * 100);
+    const sub = [r.section === "math" ? "Math" : "R&W", r.open ? `${r.open} ta ochiq xato` : "", r.n ? `${r.ok} / ${r.n} savol` : ""].filter(Boolean).join(", ");
+    return brow(r.topic, sub, a);
+  }).join("") : `<p class="lead" style="margin:6px 2px 0">Hozircha yo'q. Xato va savollardan keyin shu yerda chiqadi.</p>`;
+
+  // discipline: 21-day bars + 7-day accuracy
   const recent = d.days.filter((x) => t(x.day) > t(d.today) - 21 * DAY);
   if (recent.length) {
-    const w = 340, h = 128, L = 30, B = 20, T = 6, n = 21, bw = (w - L) / n, y = (p) => T + (1 - p) * (h - T - B);
+    const w = 340, h = 110, L = 0, B = 18, T = 4, n = 21, bw = (w - L) / n, y = (p) => T + (1 - p) * (h - T - B);
     let s = `<svg class="chart" viewBox="0 0 ${w} ${h}">`;
-    for (const p of [0, .5, 1]) s += `<text x="${L - 6}" y="${y(p) + 3}" text-anchor="end">${p * 100}%</text>`;
     s += `<line x1="${L}" x2="${w}" y1="${y(.75)}" y2="${y(.75)}" stroke="${C.lime}" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round"/>`;
     for (let i = 0; i < n; i++) {
       const day = new Date(t(d.today) - (n - 1 - i) * DAY).toISOString().slice(0, 10), r = recent.find((x) => x.day === day);
       const xx = L + i * bw + 2, bwid = bw - 5;
-      if (i % 5 === 0 || i === n - 1) s += `<text x="${xx + bwid / 2}" y="${h - 4}" text-anchor="middle">${fmt(day)}</text>`;
-      s += `<rect x="${xx}" y="${y(1)}" width="${bwid}" height="${y(0) - y(1)}" rx="${bwid / 2}" fill="${r && (r.rest || !r.total) ? C.rest : C.grid}"/>`;
+      if (i % 5 === 0 || i === n - 1) s += `<text x="${xx + bwid / 2}" y="${h - 3}" text-anchor="middle">${fmt(day)}</text>`;
+      s += `<rect x="${xx}" y="${y(1)}" width="${bwid}" height="${y(0) - y(1)}" rx="${bwid / 2}" fill="${C.grid}"/>`;
       if (!r || r.rest || !r.total) continue;
-      const p = r.done / r.total, col = p >= .75 ? C.limeSoft : p >= .5 ? C.amber : C.coral, hh = Math.max(bwid, y(0) - y(p));
-      s += `<rect x="${xx}" y="${y(0) - hh}" width="${bwid}" height="${hh}" rx="${bwid / 2}" fill="${col}"/>`;
+      const p = r.done / r.total, hh = Math.max(bwid, y(0) - y(p));
+      s += `<rect x="${xx}" y="${y(0) - hh}" width="${bwid}" height="${hh}" rx="${bwid / 2}" fill="${barCol(Math.round(p * 100))}"/>`;
     }
     $("doneChart").innerHTML = s + "</svg>";
     const actv = recent.filter((x) => !x.rest && x.total), good = actv.filter((x) => x.done / x.total >= .75).length;
-    $("doneLead").textContent = `${actv.length} kundan ${good} tasida maqsadga yetildi.`;
-  } else $("doneChart").innerHTML = emptyBox(ICON.moon, "Birinchi kun tugagach shu yerda ko'rinadi.");
-
-  const work = d.work.filter((x) => x.math_done + x.rw_done > 0);
-  if (work.length) {
-    $("accLegend").hidden = false;
-    const s0 = work.length > 1 ? work[0].day : new Date(t(work[0].day) - DAY).toISOString().slice(0, 10);
-    lineChart($("accChart"), { start: s0, end: work[work.length - 1].day, ymin: 0, ymax: 100, ticks: [0, 50, 100], pct: true, h: 160,
-      series: [{ id: "m", points: work.filter((x) => x.math_done).map((x) => [x.day, Math.round((100 * x.math_ok) / x.math_done)]), color: C.ink, dots: true },
-        { id: "r", points: work.filter((x) => x.rw_done).map((x) => [x.day, Math.round((100 * x.rw_ok) / x.rw_done)]), color: C.lime, dots: true }] });
-    $("accHint").textContent = `${work.reduce((a, x) => a + x.math_done + x.rw_done, 0)} ta savol`;
-    $("accLead").textContent = `${work.length} kunlik hisobot.`;
-  } else { $("accLegend").hidden = true; $("accHint").textContent = ""; $("accChart").innerHTML = emptyBox(ICON.rw, "Asosiy sahifadagi <b>Kechki hisob</b> orqali raqamlarni kiriting."); }
-
-  const tm = d.plans.find((x) => x.day !== d.today);
-  $("tmrHint").textContent = tm ? `${fmt(tm.day)}, ${(KIND[tm.kind] || "").toLowerCase()}` : "";
-  $("tomorrow").innerHTML = topicRows(tm) || emptyBox(ICON.moon, tm ? "Ertaga — dam yoki test kuni." : "Ertangi reja yo'q.");
+    $("doneLead").textContent = `${actv.length} kundan ${good} tasida bloklarning 75% i bajarildi.`;
+  } else { $("doneChart").innerHTML = ""; $("doneLead").textContent = "Birinchi kun tugagach shu yerda ko'rinadi."; }
+  const w7 = d.work.filter((x) => t(x.day) > t(d.today) - 7 * DAY);
+  const sum = (k) => w7.reduce((a, x) => a + Number(x[k] || 0), 0);
+  $("accRow").hidden = !w7.length;
+  $("accRow").innerHTML = w7.length ? `<div><b>${sum("math_done") ? Math.round((100 * sum("math_ok")) / sum("math_done")) + "%" : "—"}</b><span>Math aniqligi, 7 kun</span></div>
+    <div><b>${sum("rw_done") ? Math.round((100 * sum("rw_ok")) / sum("rw_done")) + "%" : "—"}</b><span>R&amp;W aniqligi, 7 kun</span></div>` : "";
 }
 
 function renderAll() { renderHome(); renderBook(); renderStats(); renderQuiz(); }
@@ -1026,26 +1012,13 @@ $("themeBtn").addEventListener("click", toggleTheme);
 
 /* ---------- home screen shortcut (Telegram 8.0+) ---------- */
 function setupHomeScreen() {
-  const card = $("hsCard"), mobile = ["ios", "android", "android_x"].includes(tg.platform);
-  if (!mobile) return;
-  const supported = tg.isVersionAtLeast && tg.isVersionAtLeast("8.0") && typeof tg.addToHomeScreen === "function";
-  if (!supported) {
-    $("hsSub").textContent = "Buning uchun Telegram'ni yangilang (Play Market / App Store)";
-    $("hsBtn").hidden = true; card.hidden = false; return;
-  }
-  const hide = () => { card.hidden = true; };
-  $("hsBtn").onclick = () => { haptic(); try { tg.addToHomeScreen(); } catch (e) { toast("Telegram bu qurilmada ruxsat bermadi"); } };
-  tg.onEvent("homeScreenAdded", () => { hide(); toast("Bosh ekranga qo'shildi"); haptic("ok"); });
-  // Android only allows shortcuts for the bot's Main Mini App (opened from the bot profile / ?startapp link)
-  const viaMainApp = () => {
-    $("hsSub").textContent = "Panelni bot profilidagi «Ilovani ochish» orqali oching — keyin qo'shish mumkin bo'ladi";
-    $("hsBtn").textContent = "Ochish";
-    $("hsBtn").onclick = () => { haptic(); tg.openTelegramLink("https://t.me/OrbitMLbot?startapp"); };
-    card.hidden = false;
-  };
-  try {
-    tg.checkHomeScreenStatus((st) => { if (st === "added") hide(); else if (st === "unsupported") viaMainApp(); else card.hidden = false; });
-  } catch (e) { card.hidden = false; }
+  // shown only while it can actually help: supported and not yet added
+  const card = $("hsCard");
+  const ok = ["ios", "android", "android_x"].includes(tg.platform) && tg.isVersionAtLeast && tg.isVersionAtLeast("8.0") && typeof tg.addToHomeScreen === "function";
+  if (!ok) return;
+  $("hsBtn").onclick = () => { haptic(); try { tg.addToHomeScreen(); } catch (e) {} };
+  tg.onEvent("homeScreenAdded", () => { card.hidden = true; toast("Bosh ekranga qo'shildi"); haptic("ok"); });
+  try { tg.checkHomeScreenStatus((st) => { card.hidden = st !== "missed"; }); } catch (e) {}
 }
 
 async function main() {

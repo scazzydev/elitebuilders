@@ -149,6 +149,27 @@
   details.mat .body code { background: #fff; border-radius: 6px; padding: 1px 5px; font-size: 13.5px; }
   details.mat.lesson { background: var(--lime-soft); }
   .rs { font-weight: 800; }
+  .card[hidden] { display: none; }
+  .btn.soft { background: var(--soft); color: var(--ink); }
+  .rv-topic { font-size: 19px; font-weight: 800; margin: 6px 0 10px; letter-spacing: -.2px; }
+  .ans { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+  .ans div { background: var(--soft); border-radius: 14px; padding: 10px 12px; }
+  .ans div:last-child { background: var(--lime-soft); }
+  .ans span { display: block; font-size: 11px; font-weight: 800; color: var(--muted); }
+  .ans b { font-size: 16px; }
+  .note-box { margin-top: 10px; padding: 12px 14px; border-radius: 16px; background: var(--soft); font-size: 14px; line-height: 1.45; font-weight: 600; }
+  .rev { background: var(--ink); color: #fff; }
+  .rev .lead { color: rgba(255,255,255,.7); }
+  .rev .hint { color: rgba(255,255,255,.6); }
+  .rev .btn.big { background: var(--lime); color: var(--lime-ink); }
+  .dots { display: flex; gap: 5px; margin: 2px 0 12px; }
+  .dots i { width: 22px; height: 6px; border-radius: 9px; background: rgba(255,255,255,.18); }
+  .dots i.on { background: var(--lime); }
+  .grp { font-size: 11px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); margin: 14px 2px 0; }
+  .opp { background: var(--lime-soft); color: var(--lime-ink); border-radius: 16px; padding: 12px 14px; font-size: 14px; font-weight: 600; line-height: 1.4; margin-top: 4px; }
+  .opp b { color: var(--ink); }
+  .xbtn { all: unset; width: 30px; height: 30px; border-radius: 50%; background: #fff; display: grid; place-items: center; cursor: pointer; font-weight: 800; color: var(--muted); flex: none; }
+  .qnum { font-size: 22px; font-weight: 800; text-align: center; }
 
   .scrim { position: fixed; inset: 0; background: rgba(20,25,18,.35); opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 20; }
   .scrim.on { opacity: 1; pointer-events: auto; }
@@ -198,7 +219,13 @@
     <div class="tiles">
       <button class="tile" data-go="v-quiz"><div class="chip purple"><svg class="ico" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg></div><span class="lbl">Savol yechish</span><span id="tQuiz">—</span></button>
       <button class="tile hl" data-sheet="report"><div class="chip"><svg class="ico" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 14 4-4 3 3 5-6"/></svg></div><span class="lbl">Kechki hisob</span><span id="tReport">kiritilmagan</span></button>
-      <button class="tile" data-sheet="ball"><div class="chip orange"><svg class="ico" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></div><span class="lbl">Test balli</span><span id="tBall">—</span></button>
+      <button class="tile" data-sheet="test"><div class="chip orange"><svg class="ico" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></div><span class="lbl">Practice test</span><span id="tBall">—</span></button>
+    </div>
+
+    <div class="card rev" id="revCard" hidden>
+      <div class="card-h"><h3>🔁 Bugungi takror</h3><span class="hint" id="revHint"></span></div>
+      <p class="lead" id="revLead"></p>
+      <button class="btn big" data-sheet="review">Boshlash</button>
     </div>
 
     <div class="card">
@@ -240,6 +267,13 @@
   <!-- ===== STATS ===== -->
   <section class="view" id="v-stats">
     <div class="vtitle"><div><h2>Statistika</h2><div class="sub" id="sSub">—</div></div></div>
+    <div class="card">
+      <div class="card-h"><h3>SAT xaritasi</h3><span class="hint" id="mapHint"></span></div>
+      <p class="lead" id="mapLead"></p>
+      <div id="oppBox"></div>
+      <div id="satMap"></div>
+    </div>
+    <div class="card"><div class="card-h"><h3>Practice testlar</h3><span class="hint" id="testHint"></span></div><div id="testList"></div></div>
     <div class="card">
       <div class="card-h"><h3>Test ballari</h3><span class="hint" id="ballHint"></span></div>
       <p class="lead" id="ballLead">Reja maqsadlari bilan solishtirilgan.</p>
@@ -291,6 +325,23 @@ const ICON = {
   check: '<svg class="ico" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M5 12l5 5 9-10"/></svg>',
 };
 
+// official Digital SAT content domains; q = approx. questions per test, c = short chip label
+const DOM = {
+  alg: { s: "math", n: "Algebra", c: "Algebra", q: 15 },
+  adv: { s: "math", n: "Advanced Math", c: "Advanced", q: 15 },
+  psda: { s: "math", n: "Problem-Solving & Data", c: "Data / foiz", q: 7 },
+  geo: { s: "math", n: "Geometry & Trigonometry", c: "Geometriya", q: 7 },
+  cs: { s: "rw", n: "Craft & Structure", c: "Craft (so'z, tuzilma)", q: 14 },
+  ii: { s: "rw", n: "Information & Ideas", c: "Info & Ideas", q: 14 },
+  sec: { s: "rw", n: "Standard English Conventions", c: "Grammatika", q: 14 },
+  eoi: { s: "rw", n: "Expression of Ideas", c: "Transitions / synthesis", q: 12 },
+};
+const PTS = { math: 600 / 44, rw: 600 / 54 }; // rough scaled points per question
+const domsOf = (s) => Object.keys(DOM).filter((k) => DOM[k].s === s);
+const MODS = { rw1: ["rw", "R&W 1", "RW1"], rw2: ["rw", "R&W 2", "RW2"], m1: ["math", "Math 1", "M1"], m2: ["math", "Math 2", "M2"] };
+let RV = null;           // review session
+let TM = null;           // test-mistakes entry state
+
 let D = null;            // last data from the server
 let VIEW = "v-home";
 const Q = { section: "math", cur: null, answered: null, ok: 0, n: 0, loading: false };
@@ -311,7 +362,7 @@ async function act(payload, okText) {
   try {
     const d = await api(payload);
     if (d.result && d.result.error) { toast(d.result.error); haptic("bad"); renderAll(); return false; }
-    D = d; renderAll(); if (okText) toast(okText); haptic("ok"); return true;
+    D = d; renderAll(); if (okText) toast(okText); haptic("ok"); return d.result || true;
   } catch (e) { toast("Xatolik — internetni tekshiring"); haptic("bad"); renderAll(); return false; }
 }
 
@@ -365,7 +416,12 @@ function renderHome() {
   $("tQuiz").textContent = qn ? `${Math.round((100 * qo) / qn)}% to'g'ri` : "boshlash";
   const w = d.today_work;
   $("tReport").textContent = w ? `${w.math_done + w.rw_done} ta savol` : "kiritilmagan";
-  $("tBall").textContent = last ? `oxirgi ${last}` : "kiritish";
+  $("tBall").textContent = last ? `oxirgi ${last}` : "ball + xatolar";
+
+  const rs = d.review_stats || { due: 0, mastered: 0, steps: 4 };
+  $("revCard").hidden = !rs.due;
+  $("revHint").textContent = rs.mastered ? `${rs.mastered} ta o'zlashtirildi` : "";
+  $("revLead").textContent = `${rs.due} ta eski xato qayta yechiladi. Eslasangiz 3, 7, 14 kunga suriladi; ${rs.steps} marta eslasangiz — o'zlashtirildi.`;
 
   // today's blocks
   const bl = d.blocks || [];
@@ -475,14 +531,54 @@ function renderBook() {
   const list = open.filter((m) => bookFilter === "all" || m.section === bookFilter);
   $("openHint").textContent = `${list.length} ta`;
   $("mistakes").innerHTML = list.length ? list.map((m) => `<div class="row"><div class="chip ${m.section === "math" ? "purple" : "blue"}">${m.section === "math" ? ICON.math : ICON.rw}</div>
-    <div class="txt"><div class="t">${esc(m.topic)}</div><div class="s">${m.reason ? `<span class="rs">${esc(REASON[m.reason] || m.reason)}</span> · ` : ""}${m.my_answer || m.right_answer ? `${esc(m.my_answer || "?")} → ${esc(m.right_answer || "?")} · ` : ""}${esc(m.note ? String(m.note).replace(/^Savol: /, "") : m.question ? String(m.question).slice(0, 70) : (m.source === "quiz" ? "tekshiruv savoli" : "izohsiz"))} · ${fmt(m.day)}</div></div>
+    <div class="txt"><div class="t">${esc(m.topic)}${m.qnum ? `<span class="tag soft">${esc(m.qnum)}</span>` : ""}</div><div class="s">🔁${m.review_stage || 0}/${(D.review_stats || {}).steps || 4} · ${m.domain && DOM[m.domain] ? esc(DOM[m.domain].c) + " · " : ""}${m.reason ? `<span class="rs">${esc(REASON[m.reason] || m.reason)}</span> · ` : ""}${m.my_answer || m.right_answer ? `${esc(m.my_answer || "?")} → ${esc(m.right_answer || "?")} · ` : ""}${esc(m.note ? String(m.note).replace(/^Savol: /, "") : m.question ? String(m.question).slice(0, 70) : (m.source === "quiz" ? "tekshiruv savoli" : "izohsiz"))} · ${fmt(m.day)}</div></div>
     <button class="btn lime" data-resolve="${m.id}">${ICON.check} Hal</button></div>`).join("")
     : emptyBox(ICON.check, "Bu yerda ochiq xato yo'q.");
+}
+
+/* ---------- SAT MAP ---------- */
+// rough count of wrong answers a score implies (used to tell whether a test's mistakes are fully entered)
+const expectedWrong = (x) => x.math && x.rw ? Math.round((800 - x.math) / PTS.math + (800 - x.rw) / PTS.rw) : Math.round((1600 - x.total) / 12.3);
+const testComplete = (x) => x.wrong_total > 0 && x.wrong_total >= 0.6 * expectedWrong(x);
+function domainRows(d) {
+  const lt = (d.tests || []).find(testComplete); // latest test whose mistakes are (mostly) entered
+  return { lt, rows: Object.keys(DOM).map((k) => {
+    const st = (d.domains || {})[k] || { n: 0, ok: 0, open: 0, total: 0 }, dm = DOM[k];
+    const qAcc = st.n ? st.ok / st.n : null, tw = lt ? Math.min(dm.q, lt.wrong[k] || 0) : null;
+    const acc = lt ? 1 - tw / dm.q : st.n >= 2 ? qAcc : null;
+    const expWrong = lt ? tw : st.n >= 3 ? dm.q * (1 - qAcc) : null;
+    const gain = expWrong === null ? null : Math.round((expWrong / 2) * PTS[dm.s] / 10) * 10;
+    return { k, dm, st, acc, tw, gain };
+  }) };
+}
+function renderMap() {
+  const d = D, { lt, rows } = domainRows(d);
+  $("mapHint").textContent = lt ? `${lt.name || "test"} · ${lt.total}` : "";
+  const newest = (d.tests || [])[0], partial = newest && newest !== lt && !testComplete(newest);
+  $("mapLead").textContent = (lt ? `${fmt(lt.day)} testidagi xatolar asosida. Ball — taxminiy.` : "Practice test xatolarini kiritgach aniq bo'ladi. Hozircha — savollar natijasi.")
+    + (partial ? ` Oxirgi testdan ${newest.wrong_total} ta xato kiritilgan (taxminan ${expectedWrong(newest)} ta bo'lishi kerak) — to'ldirsangiz xarita yangilanadi.` : "");
+  const best = rows.filter((r) => r.gain >= 10).sort((a, b) => b.gain - a.gain)[0];
+  $("oppBox").innerHTML = best ? `<div class="opp">🎯 Eng katta imkoniyat: <b>${esc(best.dm.n)}</b>. Shu bo'limdagi xatolarni yarmiga tushirsangiz ≈ <b>+${best.gain} ball</b>.</div>` : "";
+  const grp = (s, title) => `<div class="grp">${title}</div>` + rows.filter((r) => r.dm.s === s).map((r) => {
+    const a = r.acc === null ? null : Math.round(r.acc * 100);
+    const col = a === null ? C.rest : a >= 75 ? C.limeSoft : a >= 50 ? C.amber : C.coral;
+    const sub = [`SAT'da ~${r.dm.q} savol`, r.tw !== null ? `testda ${r.tw} xato` : "", r.st.n ? `savollar ${r.st.ok}/${r.st.n}` : "", r.st.open ? `${r.st.open} ochiq` : ""].filter(Boolean).join(" · ");
+    return `<div class="row"><div class="txt"><div class="t">${esc(r.dm.n)}</div><div class="s">${sub}</div><div class="mini"><i style="width:${a ?? 0}%;background:${col}"></i></div></div><div class="v">${a === null ? "—" : a + "%"}</div></div>`;
+  }).join("");
+  $("satMap").innerHTML = grp("math", "Math") + grp("rw", "Reading & Writing");
+
+  const ts = d.tests || [];
+  $("testHint").textContent = ts.length ? `${ts.length} ta` : "";
+  $("testList").innerHTML = ts.length ? ts.map((x) => `<div class="row"><div class="chip orange">🏆</div>
+    <div class="txt"><div class="t">${esc(x.name || "Test")} — ${x.total}</div><div class="s">${fmt(x.day)}${x.math ? ` · M ${x.math} · RW ${x.rw}` : ""} · ${x.wrong_total}/~${expectedWrong(x)} xato</div></div>
+    <button class="btn ghost" data-testm="${x.id}">+ Xato</button></div>`).join("")
+    : emptyBox(ICON.math, "Hali test yo'q. Asosiy sahifada <b>Practice test</b> → ball, keyin xatolar.");
 }
 
 /* ---------- STATS ---------- */
 function renderStats() {
   const d = D, balls = d.balls;
+  renderMap();
   $("sSub").textContent = `${d.sat_days > 0 ? d.sat_days + " kun qoldi · " : ""}rekord streak ${d.best_streak}`;
   const last = balls.length ? balls[balls.length - 1].value : null, first = balls.length ? balls[0].value : null;
   const next = MILESTONES.find((m) => t(m[0]) >= t(d.today));
@@ -497,7 +593,7 @@ function renderStats() {
     $("ballLead").textContent = next ? `Keyingi maqsad: ${fmt(next[0])} — ${next[1]}+` : "Reja maqsadlari bilan solishtirilgan.";
   } else {
     $("ballLegend").hidden = true; $("ballHint").textContent = "";
-    $("ballChart").innerHTML = emptyBox(ICON.math, "Hali ball yo'q. Asosiy sahifadagi <b>Test balli</b> orqali kiriting.");
+    $("ballChart").innerHTML = emptyBox(ICON.math, "Hali ball yo'q. Asosiy sahifadagi <b>Practice test</b> orqali kiriting.");
   }
 
   const recent = d.days.filter((x) => t(x.day) > t(d.today) - 21 * DAY);
@@ -540,7 +636,7 @@ function renderAll() { renderHome(); renderBook(); renderStats(); renderQuiz(); 
 async function refresh() { try { D = await api(); renderHome(); renderBook(); renderStats(); } catch (e) {} }
 
 /* ---------- bottom sheets (forms) ---------- */
-function openSheet(kind) {
+function openSheet(kind, arg) {
   const b = $("sheetBody"), w = D.today_work;
   if (kind === "report") {
     b.innerHTML = `<h3>Kechki hisob</h3><p class="lead">Bugun nechta savol yechdingiz va nechtasi to'g'ri?</p>
@@ -554,18 +650,28 @@ function openSheet(kind) {
       $("sSave").disabled = true;
       if (await act({ action: "report", md: v[0], mo: v[1], rd: v[2], ro: v[3] }, "Hisob saqlandi ✓")) closeSheet(); else $("sSave").disabled = false;
     };
-  } else if (kind === "ball") {
+  } else if (kind === "test") {
     const last = D.balls.length ? D.balls[D.balls.length - 1].value : 1000;
-    b.innerHTML = `<h3>Practice test balli</h3><p class="lead">Bluebook natijasini kiriting (400–1600). Bugungi sana bilan saqlanadi.</p>
-      <input class="inp bignum" id="b_v" inputmode="numeric" placeholder="${last}">
-      <div class="chips" style="justify-content:center">${[-20, -10, 10, 20].map((x) => `<button data-step="${x}">${x > 0 ? "+" : ""}${x}</button>`).join("")}</div>
-      <button class="btn dark big" style="margin-top:16px" id="sSave">Saqlash</button>`;
-    b.querySelectorAll("[data-step]").forEach((x) => x.onclick = () => { const i = $("b_v"); i.value = (parseInt(i.value || i.placeholder, 10) || 1000) + +x.dataset.step; haptic(); });
+    const ex = (D.tests || []).find((x) => x.day === D.today);
+    b.innerHTML = `<h3>${ex ? "Bugungi test" : "Practice test"}</h3><p class="lead">Bluebook natijasi. Keyin har bir xatoni kiritasiz — SAT xaritasi shundan tuziladi.</p>
+      <label class="f">Umumiy ball</label><input class="inp bignum" id="t_total" inputmode="numeric" placeholder="${last}" value="${ex ? ex.total : ""}">
+      <div class="grid2"><div><label class="f">Math (ixtiyoriy)</label><input class="inp" id="t_m" inputmode="numeric" placeholder="520" value="${ex && ex.math ? ex.math : ""}"></div>
+      <div><label class="f">R&amp;W (ixtiyoriy)</label><input class="inp" id="t_rw" inputmode="numeric" placeholder="530" value="${ex && ex.rw ? ex.rw : ""}"></div></div>
+      <button class="btn dark big" style="margin-top:16px" id="sSave">Saqlash → xatolarni kiritish</button>`;
+    const sync = () => { const m = parseInt($("t_m").value, 10), r = parseInt($("t_rw").value, 10); if (m && r) $("t_total").value = m + r; };
+    $("t_m").oninput = sync; $("t_rw").oninput = sync;
     $("sSave").onclick = async () => {
-      const v = parseInt($("b_v").value, 10);
+      const n = (id) => ($(id).value.trim() === "" ? null : parseInt($(id).value, 10));
       $("sSave").disabled = true;
-      if (await act({ action: "ball", value: v }, `Ball saqlandi: ${v}`)) closeSheet(); else $("sSave").disabled = false;
+      const r = await act({ action: "test_add", total: n("t_total"), math: n("t_m"), rw: n("t_rw") }, "Ball saqlandi ✓");
+      if (r && r.test_id) openSheet("testm", r.test_id); else $("sSave").disabled = false;
     };
+  } else if (kind === "testm") {
+    TM = { id: arg, mod: TM && TM.id === arg ? TM.mod : "rw1", dom: null, reason: null };
+    renderTestM();
+  } else if (kind === "review") {
+    RV = { list: (D.reviews || []).slice(), i: 0, shown: false, picked: null, ok: 0 };
+    renderReview();
   } else if (kind === "mistake") {
     let sec = Q.section;
     const sugg = () => (D.topics[sec] || []).slice(0, 14).map((x) => `<button data-topic="${esc(x)}">${esc(x)}</button>`).join("");
@@ -574,6 +680,7 @@ function openSheet(kind) {
       <div class="seg small inset" id="mSeg"><button data-s="math">Math</button><button data-s="rw">R&amp;W</button></div>
       <label class="f">Mavzu</label><input class="inp" id="m_t" placeholder="masalan: Foiz o'zgarishi" maxlength="60">
       <div class="chips" id="mSugg"></div>
+      <label class="f">SAT bo'limi</label><div class="chips" id="mDom"></div>
       <label class="f">Savol (ko'chirib yoki qisqacha yozing)</label><textarea class="inp" id="m_q" maxlength="1500" placeholder="A shirt costs $40 after a 20% discount. What was the original price?"></textarea>
       <div class="grid2"><div><label class="f">Mening javobim</label><input class="inp" id="m_my" maxlength="200" placeholder="B (48)"></div>
       <div><label class="f">To'g'ri javob</label><input class="inp" id="m_ok" maxlength="200" placeholder="D (50)"></div></div>
@@ -581,9 +688,13 @@ function openSheet(kind) {
       <div class="chips" id="mWhy">${Object.entries(REASON).map(([k, v]) => `<button data-r="${k}">${v}</button>`).join("")}</div>
       <label class="f">Izoh (ixtiyoriy)</label><textarea class="inp" id="m_n" maxlength="200" placeholder="eski narxga emas, yangisiga bo'ldim"></textarea>
       <button class="btn dark big" style="margin-top:16px" id="sSave">Saqlash</button>`;
+    let dom = null;
+    const paintDom = () => { $("mDom").innerHTML = domsOf(sec).map((k) => `<button data-d="${k}" class="${dom === k ? "on" : ""}">${esc(DOM[k].c)}</button>`).join("");
+      $("mDom").querySelectorAll("[data-d]").forEach((x) => x.onclick = () => { dom = dom === x.dataset.d ? null : x.dataset.d; paintDom(); haptic(); }); };
     const paint = () => { b.querySelectorAll("#mSeg button").forEach((x) => x.classList.toggle("on", x.dataset.s === sec)); $("mSugg").innerHTML = sugg();
-      $("mSugg").querySelectorAll("[data-topic]").forEach((x) => x.onclick = () => { $("m_t").value = x.dataset.topic; haptic(); }); };
-    b.querySelectorAll("#mSeg button").forEach((x) => x.onclick = () => { sec = x.dataset.s; paint(); haptic(); });
+      $("mSugg").querySelectorAll("[data-topic]").forEach((x) => x.onclick = () => { $("m_t").value = x.dataset.topic; dom = (D.topic_domain || {})[x.dataset.topic] || dom; paintDom(); haptic(); });
+      paintDom(); };
+    b.querySelectorAll("#mSeg button").forEach((x) => x.onclick = () => { sec = x.dataset.s; dom = null; paint(); haptic(); });
     b.querySelectorAll("#mWhy button").forEach((x) => x.onclick = () => {
       reason = reason === x.dataset.r ? null : x.dataset.r;
       b.querySelectorAll("#mWhy button").forEach((y) => y.classList.toggle("on", y.dataset.r === reason)); haptic();
@@ -591,7 +702,7 @@ function openSheet(kind) {
     paint();
     $("sSave").onclick = async () => {
       $("sSave").disabled = true;
-      const ok = await act({ action: "mistake_add", section: sec, topic: $("m_t").value, question: $("m_q").value,
+      const ok = await act({ action: "mistake_add", section: sec, domain: dom, topic: $("m_t").value, question: $("m_q").value,
         my_answer: $("m_my").value, right_answer: $("m_ok").value, reason, note: $("m_n").value }, "Daftarga qo'shildi ✓");
       if (ok) closeSheet(); else $("sSave").disabled = false;
     };
@@ -599,6 +710,87 @@ function openSheet(kind) {
   $("scrim").classList.add("on"); $("sheet").classList.add("on"); haptic();
   if (tg.BackButton) tg.BackButton.show();
 }
+/* ---------- test mistakes: fast entry, one question at a time ---------- */
+function renderTestM() {
+  const b = $("sheetBody"), test = (D.tests || []).find((x) => x.id === TM.id) || {};
+  const sec = MODS[TM.mod][0];
+  const entered = (D.open_mistakes || []).filter((m) => m.test_id === TM.id);
+  const tops = Object.entries(D.topic_domain || {}).filter(([, d]) => d === TM.dom).map(([tp]) => tp).slice(0, 10);
+  b.innerHTML = `<h3>Test xatolari</h3><p class="lead">${esc(test.name || "Test")} · ${test.day ? fmt(test.day) : ""} · ${test.total || ""}. Har xato: modul, raqam, bo'lim — 10 soniya.</p>
+    <div class="seg small inset" id="tmMod">${Object.entries(MODS).map(([k, v]) => `<button data-m="${k}" class="${TM.mod === k ? "on" : ""}">${v[1]}</button>`).join("")}</div>
+    <label class="f">Savol raqami</label><input class="inp qnum" id="tm_n" inputmode="numeric" maxlength="2" placeholder="${sec === "math" ? "1–22" : "1–27"}">
+    <label class="f">SAT bo'limi</label><div class="chips" id="tmDom">${domsOf(sec).map((k) => `<button data-d="${k}" class="${TM.dom === k ? "on" : ""}">${esc(DOM[k].c)}</button>`).join("")}</div>
+    <label class="f">Nega xato?</label><div class="chips" id="tmWhy">${Object.entries(REASON).map(([k, v]) => `<button data-r="${k}" class="${TM.reason === k ? "on" : ""}">${v}</button>`).join("")}</div>
+    <label class="f">Mavzu (ixtiyoriy)</label><input class="inp" id="tm_t" maxlength="60" placeholder="${TM.dom ? esc(DOM[TM.dom].n) : "masalan: Foiz"}">
+    ${tops.length ? `<div class="chips" id="tmTop">${tops.map((x) => `<button data-topic="${esc(x)}">${esc(x)}</button>`).join("")}</div>` : ""}
+    <button class="btn dark big" style="margin-top:16px" id="tmAdd">Qo'shish</button>
+    <label class="f" style="margin-top:18px">Kiritilgan (${entered.length})</label>
+    ${entered.map((m) => `<div class="row"><div class="txt"><div class="t">${esc(m.qnum || "")} · ${esc(m.topic)}</div><div class="s">${m.domain ? esc(DOM[m.domain].c) : ""}${m.reason ? " · " + esc(REASON[m.reason]) : ""}</div></div><button class="xbtn" data-del="${m.id}" aria-label="O'chirish">×</button></div>`).join("") || `<p class="lead">Hali yo'q.</p>`}
+    <button class="btn soft big" style="margin-top:14px" id="tmDone">Tugatdim</button>`;
+  b.querySelectorAll("#tmMod [data-m]").forEach((x) => x.onclick = () => { if (TM.mod !== x.dataset.m) { if (MODS[x.dataset.m][0] !== sec) TM.dom = null; TM.mod = x.dataset.m; } haptic(); renderTestM(); });
+  b.querySelectorAll("#tmDom [data-d]").forEach((x) => x.onclick = () => { const n = $("tm_n").value; TM.dom = TM.dom === x.dataset.d ? null : x.dataset.d; haptic(); renderTestM(); $("tm_n").value = n; });
+  b.querySelectorAll("#tmWhy [data-r]").forEach((x) => x.onclick = () => { TM.reason = TM.reason === x.dataset.r ? null : x.dataset.r; b.querySelectorAll("#tmWhy [data-r]").forEach((y) => y.classList.toggle("on", y.dataset.r === TM.reason)); haptic(); });
+  b.querySelectorAll("#tmTop [data-topic]").forEach((x) => x.onclick = () => { $("tm_t").value = x.dataset.topic; haptic(); });
+  b.querySelectorAll("[data-del]").forEach((x) => x.onclick = async () => { x.disabled = true; await act({ action: "mistake_del", id: +x.dataset.del }, "O'chirildi"); renderTestM(); });
+  $("tmDone").onclick = () => { TM = null; closeSheet(); };
+  $("tmAdd").onclick = async () => {
+    const num = parseInt($("tm_n").value, 10), max = sec === "math" ? 22 : 27;
+    if (!(num >= 1 && num <= max)) { toast(`Savol raqami 1–${max}`); haptic("bad"); return; }
+    if (!TM.dom) { toast("SAT bo'limini tanlang"); haptic("bad"); return; }
+    const qnum = `${MODS[TM.mod][2]}-${num}`;
+    $("tmAdd").disabled = true;
+    const r = await act({ action: "mistake_add", section: sec, domain: TM.dom, topic: $("tm_t").value.trim() || DOM[TM.dom].n,
+      reason: TM.reason, test_id: TM.id, qnum }, `Qo'shildi: ${qnum}`);
+    if (r) { TM.dom = null; TM.reason = null; }
+    renderTestM();
+    if (r) $("tm_n").focus();
+  };
+}
+
+/* ---------- spaced review of old mistakes ---------- */
+function renderReview() {
+  const b = $("sheetBody"), m = RV.list[RV.i], steps = (D.review_stats || {}).steps || 4;
+  if (!m) {
+    b.innerHTML = `<h3>Takror tugadi</h3><p class="lead">${RV.list.length} tadan ${RV.ok} tasini esladingiz.</p>
+      ${emptyBox(ICON.check, RV.ok === RV.list.length ? "Hammasi esda. Ular keyingi muddatga surildi." : "Unutganlaringiz ertaga yana chiqadi — shunda mustahkamlanadi.")}
+      <button class="btn dark big" style="margin-top:16px" id="rvClose">Yopish</button>`;
+    $("rvClose").onclick = closeSheet; return;
+  }
+  const dm = m.domain && DOM[m.domain];
+  const note = m.note && !String(m.note).startsWith("Savol: ") ? m.note : null;
+  let h = `<div class="card-h"><h3>Takror ${RV.i + 1}/${RV.list.length}</h3><span class="hint">${m.review_stage || 0}/${steps} bosqich</span></div>
+    <div class="q-meta" style="margin-top:10px"><span class="tag soft">${m.section === "math" ? "Math" : "R&amp;W"}</span>${dm ? `<span class="tag soft">${esc(dm.n)}</span>` : ""}${m.qnum ? `<span class="tag soft">${esc(m.qnum)}</span>` : ""}<span class="tag soft">${fmt(m.day)}</span></div>
+    <div class="rv-topic">${esc(m.topic)}</div>`;
+  if (m.quiz) {
+    const A = RV.picked, right = m.quiz.answer;
+    h += `<p class="q-text">${esc(m.question || "")}</p>` + m.quiz.options.map((o, i) => {
+      const cls = A !== null ? (i === right ? "right" : i === A ? "wrong" : "") : "";
+      return `<button class="opt ${A !== null ? "locked" : ""} ${cls}" data-rv="${i}"><span class="L">${"ABCD"[i]}</span><span>${esc(o)}</span></button>`;
+    }).join("");
+    if (A !== null) h += `<div class="explain ${A === right ? "ok" : "bad"}"><b>${A === right ? "Esladingiz! " : "Hali o'zlashmagan. "}</b>${esc(m.quiz.explain || "")}</div>
+      <button class="btn dark big" style="margin-top:12px" id="rvNext">Keyingisi →</button>`;
+  } else {
+    h += m.question ? `<p class="q-text">${esc(m.question)}</p>` : `<p class="lead">Savol matni yozilmagan. Eslang: bu mavzuda nima qilish kerak edi?</p>`;
+    if (!RV.shown) h += `<p class="lead">Avval o'zingiz yeching yoki eslang, keyin javobni oching.</p><button class="btn dark big" id="rvShow">Javobni ko'rsat</button>`;
+    else h += (m.my_answer || m.right_answer ? `<div class="ans"><div><span>Siz</span><b>${esc(m.my_answer || "—")}</b></div><div><span>To'g'ri</span><b>${esc(m.right_answer || "—")}</b></div></div>` : "")
+      + (note ? `<div class="note-box">${esc(note)}</div>` : "")
+      + (m.reason ? `<p class="lead" style="margin-top:8px">Sabab: <b>${esc(REASON[m.reason] || m.reason)}</b></p>` : "")
+      + `<div class="grid2" style="margin-top:14px"><button class="btn soft big" id="rvNo">Unutibman</button><button class="btn lime big" id="rvYes">Eslayman ✓</button></div>`;
+  }
+  b.innerHTML = h;
+  const send = (remembered) => api({ action: "review", id: m.id, remembered }).then((d) => { D = d; renderAll(); }).catch(() => toast("Saqlanmadi — internetni tekshiring"));
+  const next = () => { RV.i++; RV.shown = false; RV.picked = null; renderReview(); $("sheet").scrollTop = 0; };
+  b.querySelectorAll("[data-rv]").forEach((x) => x.onclick = () => {
+    if (RV.picked !== null) return;
+    RV.picked = +x.dataset.rv; const ok = RV.picked === m.quiz.answer; if (ok) RV.ok++;
+    haptic(ok ? "ok" : "bad"); send(ok); renderReview();
+  });
+  if ($("rvNext")) $("rvNext").onclick = next;
+  if ($("rvShow")) $("rvShow").onclick = () => { RV.shown = true; haptic(); renderReview(); };
+  if ($("rvYes")) $("rvYes").onclick = () => { RV.ok++; haptic("ok"); send(true); next(); };
+  if ($("rvNo")) $("rvNo").onclick = () => { haptic("bad"); send(false); next(); };
+}
+
 function closeSheet() {
   $("scrim").classList.remove("on"); $("sheet").classList.remove("on");
   if (document.activeElement) document.activeElement.blur();
@@ -622,6 +814,7 @@ document.addEventListener("click", async (e) => {
   if (el.dataset.v) return go(el.dataset.v);
   if (el.dataset.go) return go(el.dataset.go);
   if (el.dataset.sheet) return openSheet(el.dataset.sheet);
+  if (el.dataset.testm) return openSheet("testm", +el.dataset.testm);
   if (el.dataset.mark) { el.disabled = true; el.textContent = "…"; return act({ action: "mark", key: el.dataset.mark, status: "done" }, "Zo'r! Blok boshlandi 💪"); }
   if (el.dataset.resolve) { el.disabled = true; return act({ action: "mistake_resolve", id: el.dataset.resolve }, "Yopildi ✓"); }
   if (el.dataset.opt !== undefined) return answerQuiz(+el.dataset.opt);

@@ -343,7 +343,7 @@
       <button class="btn dark" id="hsBtn">Qo'shish</button>
     </div>
 
-    <div class="card">
+    <div class="card" id="tlCard">
       <div class="card-h"><h3>Kun rejasi</h3><span class="hint" id="kindHint"></span></div>
       <div class="tl" id="timeline"></div>
       <button class="more" id="tlMore"></button>
@@ -611,6 +611,7 @@ function renderNow() {
 function renderTimeline() {
   const d = D, bl = d.blocks || [], p = d.plans.find((x) => x.day === d.today);
   $("kindHint").textContent = p ? KIND[p.kind] || "" : "";
+  $("tlCard").hidden = !bl.length; // a free day is already explained by the top card
   let ci = -1; bl.forEach((b, i) => { if (toMin(b.key) <= d.now_min) ci = i; });
   const from = tlOpen ? 0 : Math.max(0, Math.min(ci - 1, bl.length - 5)), to = tlOpen ? bl.length : from + 5;
   $("timeline").innerHTML = bl.length ? bl.slice(from, to).map((b, j) => {

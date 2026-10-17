@@ -265,8 +265,19 @@
   .vstat div + div { border-left: 1px solid var(--line); }
   .vstat b { display: block; font-family: var(--display); font-size: 24px; font-weight: 800; letter-spacing: -.5px; }
   .vstat span { font-size: 11.5px; font-weight: 700; color: var(--muted); }
-  .vsets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-  .vset { all: unset; background: var(--soft); border-radius: 20px; padding: 13px 14px; cursor: pointer; transition: transform .12s; }
+  .vsets { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .vbook { border-top: 1px solid var(--line, rgba(0,0,0,.06)); margin-top: 12px; padding-top: 2px; }
+  .vbook:first-of-type { border-top: 0; }
+  .vb-h { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding: 2px; cursor: pointer; list-style: none; }
+  .vb-h::-webkit-details-marker { display: none; }
+  .vb-h span { display: inline-flex; align-items: center; gap: 4px; }
+  .vb-h svg { width: 14px; height: 14px; transition: transform .2s; }
+  .vbook[open] .vb-h svg { transform: rotate(90deg); }
+  .vnext { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--lime2); box-shadow: 0 0 0 4px var(--lime-soft); }
+  .vb-h b { font-size: 14px; font-weight: 800; }
+  .vb-h span { font-size: 12px; color: var(--muted); font-weight: 700; }
+  .vh-set { font-size: 22px !important; line-height: 1.15; }
+  .vset { all: unset; background: var(--soft); border-radius: 18px; padding: 11px 12px; cursor: pointer; transition: transform .12s; }
   .vset:active { transform: scale(.98); }
   .vset .vs-h { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 15px; }
   .vset .vs-s { font-size: 12px; color: var(--muted); font-weight: 700; margin-top: 3px; }
@@ -660,7 +671,7 @@ function renderHome() {
 }
 
 const WAKE = "0500", WAKE_DL = 5 * 60 + 15, VOCAB_KEYS = ["0630", "1840"];
-const vocabLine = () => { const s = vsum(); return [s.due ? `${s.due} ta takror` : "", s.next_set ? `yangi Set ${s.next_set}` : ""].filter(Boolean).join(" + ") || "Lug'at"; };
+const vocabLine = () => { const s = vsum(); return [s.due ? `${s.due} ta takror` : "", s.next_set ? `yangi ${vLabel(s.next_set)}` : ""].filter(Boolean).join(" + ") || "Lug'at"; };
 
 // progress ring: blocks started today
 function ring(done, total, label) {
@@ -789,26 +800,38 @@ async function answerQuiz(i) {
 
 /* ---------- VOCABULARY (flashcards + spaced review) ---------- */
 const V_STEPS = 5, V_BATCH = 5;
-const V = { words: null, today: null, loading: false, mode: null, set: null, queue: [], batch: [], i: 0, res: {}, view: "card", flipped: false, picked: null, opts: {}, passWrong: new Set(), total: 0 };
+const V = { words: null, sets: null, today: null, loading: false, mode: null, set: null, queue: [], batch: [], i: 0, res: {}, view: "card", flipped: false, picked: null, opts: {}, passWrong: new Set(), total: 0 };
 const vById = (id) => V.words.find((w) => w.id === id);
 const shuffle = (a) => a.map((x) => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map((p) => p[1]);
 const vDue = () => (V.words || []).filter((w) => w.seen && w.next_review && w.next_review <= V.today);
-// counts from loaded words when available (live during a session), otherwise from the server summary
+// set list comes from the server; counts of sets whose words are loaded are recomputed live
 function vsum() {
-  if (!V.words) return (D && D.vocab) || { total: 0, seen: 0, due: 0, mastered: 0, next_set: null, sets: [] };
-  const sets = new Map(); let seen = 0, mastered = 0;
+  const base = (D && D.vocab) || { total: 0, seen: 0, due: 0, mastered: 0, next_set: null, sets: [] };
+  if (!V.words) return base;
+  const sets = new Map((V.sets || base.sets).map((x) => [x.set_no, { ...x }]));
+  const live = new Map();
   for (const w of V.words) {
-    const a = sets.get(w.set_no) || { set_no: w.set_no, n: 0, seen: 0, known: 0, mastered: 0 };
-    a.n++; if (w.seen) { a.seen++; seen++; } if (w.stage >= 1) a.known++; if (w.stage >= V_STEPS) { a.mastered++; mastered++; }
-    sets.set(w.set_no, a);
+    const a = live.get(w.set_no) || { n: 0, seen: 0, known: 0, mastered: 0 };
+    a.n++; if (w.seen) a.seen++; if (w.stage >= 1) a.known++; if (w.stage >= V_STEPS) a.mastered++;
+    live.set(w.set_no, a);
   }
+  for (const [k, a] of live) sets.set(k, { ...(sets.get(k) || { set_no: k, label: "Set " + k }), ...a });
   const list = [...sets.values()].sort((a, b) => a.set_no - b.set_no), nx = list.find((x) => x.seen < x.n);
-  return { total: V.words.length, seen, due: vDue().length, mastered, next_set: nx ? nx.set_no : null, sets: list };
+  const sum = (f) => list.reduce((t, x) => t + (x[f] || 0), 0);
+  return { total: sum("n"), seen: sum("seen"), due: vDue().length, mastered: sum("mastered"), next_set: nx ? nx.set_no : null, sets: list };
+}
+function vLabel(no) {
+  const x = (V.sets || ((D && D.vocab && D.vocab.sets) || [])).find((y) => y.set_no === no);
+  return (x && x.label) || "Set " + no;
+}
+function vMerge(words) {
+  const have = new Set((V.words || []).map((w) => w.id));
+  V.words = [...(V.words || []), ...words.filter((w) => !have.has(w.id))];
 }
 async function loadVocab() {
   if (V.loading) return;
   V.loading = true; renderQuiz();
-  try { const d = await api({ action: "vocab" }); V.words = d.result.words || []; V.today = d.result.today; }
+  try { const d = await api({ action: "vocab" }); V.words = d.result.words || []; V.sets = d.result.sets || null; V.today = d.result.today; }
   catch (e) { toast("So'zlar yuklanmadi — internetni tekshiring"); }
   V.loading = false; renderQuiz();
 }
@@ -819,8 +842,13 @@ function vSend(id, ok) {
     $("vCnt").textContent = vsum().due;
   }).catch(() => toast("Saqlanmadi — internetni tekshiring"));
 }
-function vStart(mode, setNo) {
+async function vStart(mode, setNo) {
   if (!V.words) return;
+  if (mode === "learn" && !V.words.some((w) => w.set_no === setNo)) {
+    toast("Yuklanmoqda…");
+    try { const d = await api({ action: "vocab", sets: [setNo] }); vMerge(d.result.words || []); }
+    catch (e) { toast("So'zlar yuklanmadi — internetni tekshiring"); return; }
+  }
   let ids;
   if (mode === "learn") {
     const ws = V.words.filter((w) => w.set_no === setNo);
@@ -861,7 +889,7 @@ function vExit(msg) { V.mode = null; renderQuiz(); window.scrollTo({ top: 0 }); 
 function vContinue() {
   if (V.queue.length) { vNextBatch(); return renderVocab(); }
   if (V.passWrong.size) { V.queue = shuffle([...V.passWrong]); V.passWrong = new Set(); vNextBatch(); return renderVocab(); }
-  vExit(V.mode === "learn" ? `Set ${V.set} tugadi 🎉` : "Takror tugadi 🎉");
+  vExit(V.mode === "learn" ? `${vLabel(V.set)} tugadi 🎉` : "Takror tugadi 🎉");
 }
 
 function renderVocab() {
@@ -875,7 +903,7 @@ function renderVocab() {
   if (V.view === "sum") return vSummary(el);
   const id = V.batch[V.i], w = vById(id);
   const bar = V.batch.map((x, k) => `<i class="${V.res[x] === true ? "ok" : V.res[x] === false ? "no" : k === V.i ? "cur" : ""}"></i>`).join("");
-  const label = V.mode === "learn" ? `Set ${V.set}` : "Takror";
+  const label = V.mode === "learn" ? vLabel(V.set) : "Takror";
   let h = `<div class="vs-top"><button class="xbtn" id="vX" aria-label="Chiqish">×</button><div class="vs-bar">${bar}</div><span class="vs-l">${label} · ${V.i + 1}/${V.batch.length}</span></div>`;
   const ant = w.ant ? `<div class="fc-ant"><span>Antonim</span><b>${esc(w.ant)}</b>${w.ant_uz ? ` — ${esc(w.ant_uz)}` : ""}</div>` : "";
   if (V.mode === "learn") {
@@ -912,10 +940,10 @@ function renderVocab() {
 function vSummary(el) {
   const ok = V.batch.filter((x) => V.res[x] === true).length, no = V.batch.length - ok;
   const left = V.queue.length, lastOfPass = !left;
-  const title = lastOfPass && !V.passWrong.size ? (V.mode === "learn" ? `Set ${V.set} tugadi!` : "Takror tugadi!") : "Takrorlash tugadi!";
+  const title = lastOfPass && !V.passWrong.size ? (V.mode === "learn" ? `${vLabel(V.set)} tugadi!` : "Takror tugadi!") : "Takrorlash tugadi!";
   const emo = no === 0 ? "🎉" : ok >= no ? "💪" : "🌱";
   const cont = left ? "Davom etish" : V.passWrong.size ? "Bilmaganlarimni takrorlash" : "Tayyor";
-  el.innerHTML = `<div class="vs-top"><button class="xbtn" id="vX" aria-label="Chiqish">×</button><div class="vs-bar">${V.batch.map((x) => `<i class="${V.res[x] ? "ok" : "no"}"></i>`).join("")}</div><span class="vs-l">${V.mode === "learn" ? `Set ${V.set}` : "Takror"}</span></div>
+  el.innerHTML = `<div class="vs-top"><button class="xbtn" id="vX" aria-label="Chiqish">×</button><div class="vs-bar">${V.batch.map((x) => `<i class="${V.res[x] ? "ok" : "no"}"></i>`).join("")}</div><span class="vs-l">${V.mode === "learn" ? vLabel(V.set) : "Takror"}</span></div>
     <div class="vsum"><div class="emo">${emo}</div><h2>${title}</h2><div class="sub">${no === 0 ? "Hammasini bildingiz" : `${no} ta so'z ertaga yana chiqadi`}</div>
     <div class="vsum-t"><div class="ok"><b>${ok}</b><span>To'g'ri</span></div><div class="no"><b>${no}</b><span>Xato</span></div></div>
     <div class="vsum-left"><span>Qolgan kartalar</span>${left}${V.passWrong.size && !left ? ` · takrorga ${V.passWrong.size}` : ""}</div>
@@ -928,23 +956,34 @@ function vSummary(el) {
   $("vCont").onclick = () => { haptic(); vContinue(); window.scrollTo({ top: 0 }); };
 }
 
+const V_BOOKS = { cp: "College Panda 400", sat: "SATashkent — real imtihon so'zlari", ivy: "Ivy Global 500", adv: "Advanced Package" };
+function vGroups(sets) {
+  const out = [];
+  for (const x of sets) {
+    const k = x.book || "other", name = V_BOOKS[k] || "Boshqa so'zlar";
+    let g = out.find((y) => y.k === k);
+    if (!g) out.push((g = { k, name, sets: [], n: 0, known: 0 }));
+    g.sets.push(x); g.n += x.n; g.known += x.known || 0;
+  }
+  return out;
+}
 function vHome(el) {
   const s = vsum(), nx = s.next_set, nxs = s.sets.find((x) => x.set_no === nx);
   el.innerHTML = `<div class="vhero">
       <div class="now-head"><div><span class="now-tag ${s.due ? "" : "idle"}"><i></i>Bugungi lug'at</span><span class="now-time">1 yangi set + takror</span></div>${s.total ? ring(s.seen, s.total, Math.round((100 * s.seen) / s.total) + "%") : ""}</div>
       <div class="vh-row"><div class="vh-box"><b>${s.due}</b><span>${s.due ? "so'z takrorni kutmoqda" : "takror yo'q"}</span></div>
-        <div class="vh-box"><b>${nx ? "Set " + nx : "✓"}</b><span>${nx ? `${nxs.seen}/${nxs.n} ko'rilgan` : "hamma set ko'rilgan"}</span></div></div>
+        <div class="vh-box"><b class="vh-set">${nx ? vLabel(nx) : "✓"}</b><span>${nx ? `${nxs.seen}/${nxs.n} ko'rilgan` : "hamma set ko'rilgan"}</span></div></div>
       ${s.due ? `<button class="btn go" id="vRev">Takrorni boshlash</button>` : ""}
-      ${nx ? `<button class="btn ${s.due ? "go2" : "go"}" id="vNew">Set ${nx} — yangi so'zlar</button>` : ""}
+      ${nx ? `<button class="btn ${s.due ? "go2" : "go"}" id="vNew">${vLabel(nx)} — yangi so'zlar</button>` : ""}
       ${!s.due && !nx ? `<div class="now-note">Hammasi joyida. Yangi so'zlarni Claude'ga yuboring.</div>` : ""}
     </div>
     <div class="card vstat"><div><b>${s.seen}</b><span>o'rganilgan</span></div><div><b>${s.mastered}</b><span>mustahkam</span></div><div><b>${s.total}</b><span>jami so'z</span></div></div>
     <div class="card"><div class="card-h"><h3>Setlar</h3><span class="hint">bosib o'rganing</span></div>
-      <div class="vsets">${s.sets.map((x) => {
+      ${vGroups(s.sets).map((g) => `<details class="vbook" ${g.sets.some((x) => x.set_no === nx) || g.known ? "open" : ""}><summary class="vb-h"><b>${esc(g.name)}</b><span>${g.known}/${g.n} so'z ${ICON.arrow}</span></summary><div class="vsets">${g.sets.map((x) => {
         const full = x.known === x.n, p = Math.round((100 * x.known) / Math.max(1, x.n));
-        return `<button class="vset ${full ? "full" : x.set_no === nx ? "next" : ""}" data-vset="${x.set_no}"><div class="vs-h">Set ${x.set_no}<span>${full ? ICON.check : x.set_no === nx ? '<span class="tag lime" style="margin:0">navbatda</span>' : ""}</span></div>
+        return `<button class="vset ${full ? "full" : x.set_no === nx ? "next" : ""}" data-vset="${x.set_no}"><div class="vs-h">Set ${x.book_set || x.set_no}<span>${full ? ICON.check : x.set_no === nx ? '<i class="vnext"></i>' : ""}</span></div>
           <div class="vs-s">${x.known}/${x.n} biladi${x.mastered ? ` · ${x.mastered} mustahkam` : ""}</div><div class="mini"><i style="width:${p}%"></i></div></button>`;
-      }).join("") || emptyBox(ICON.read, "Hali so'z yo'q. Claude'ga so'zlarni yuboring — tarjimasi bilan qo'shadi.")}</div>
+      }).join("")}</div></details>`).join("") || emptyBox(ICON.read, "Hali so'z yo'q. Claude'ga so'zlarni yuboring — tarjimasi bilan qo'shadi.")}
       <p class="lead" style="margin:14px 2px 0">Yangi so'zlarni Claude'ga yozing — tarjimasi bilan shu yerga qo'shiladi.</p></div>`;
   if ($("vRev")) $("vRev").onclick = () => vStart("review");
   if ($("vNew")) $("vNew").onclick = () => vStart("learn", nx);

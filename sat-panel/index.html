@@ -81,6 +81,15 @@
   .now-topic { font-size: 14px; font-weight: 600; opacity: .72; margin-top: 4px; line-height: 1.35; }
   .now-cta { margin-top: 18px; }
   .now .btn.go { background: #1c2a0c; color: #f3ffe0; height: 56px; width: 100%; border-radius: 18px; font-size: 15.5px; box-sizing: border-box; }
+  .steps { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+  .step { display: grid; grid-template-columns: 86px 1fr; gap: 10px; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.45); font-size: 13.5px; line-height: 1.35; font-weight: 600; }
+  .step .tm { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 12.5px; opacity: .7; padding-top: 1px; }
+  .step.past { opacity: .45; text-decoration: line-through; text-decoration-thickness: 1px; }
+  .step.cur { background: #1c2a0c; color: #f3ffe0; }
+  .step.cur .tm { opacity: .85; }
+  .step-cd { display: flex; align-items: baseline; justify-content: space-between; margin-top: 6px; }
+  .step-cd b { font-family: var(--display); font-size: 34px; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+  .step-cd span { font-size: 12px; opacity: .75; font-weight: 700; }
   .now-note { margin-top: 12px; font-size: 13px; font-weight: 700; opacity: .75; display: flex; gap: 6px; align-items: center; justify-content: center; }
   .now-note b { font-weight: 800; }
 
@@ -519,6 +528,33 @@ const DAY = 86400000;
 const t = (d) => Date.parse(d + "T00:00:00Z");
 const fmt = (d) => { const x = new Date(t(d)); return x.getUTCDate() + "." + String(x.getUTCMonth() + 1).padStart(2, "0"); };
 const toMin = (k) => +k.slice(0, 2) * 60 + +k.slice(2, 4);
+const hmMin = (t) => +t.slice(0, 2) * 60 + +t.slice(3, 5);
+// Samarkand time (UTC+5) in seconds since midnight — the panel's own clock for timers
+const nowSec = () => { const d = new Date(); return ((d.getUTCHours() + 5) % 24) * 3600 + d.getUTCMinutes() * 60 + d.getUTCSeconds(); };
+const blockEnd = (b) => { const t = (b.time || "").split("–")[1]; return t ? hmMin(t) : toMin(b.key) + 30; };
+const fmtLeft = (s) => { s = Math.max(0, s); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60; return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(x).padStart(2, "0"); };
+function stepsHtml(b) {
+  const steps = b.steps || [];
+  if (!steps.length) return "";
+  const now = nowSec();
+  const ci = steps.findIndex((x) => now >= hmMin(x.a) * 60 && now < hmMin(x.b) * 60);
+  const rows = steps.map((x, i) => `<div class="step ${i === ci ? "cur" : now >= hmMin(x.b) * 60 ? "past" : ""}"><span class="tm">${x.a}–${x.b}</span><span>${esc(x.what)}${i === ci ? `<div class="step-cd"><b id="stepCd" data-end="${hmMin(x.b) * 60}">${fmtLeft(hmMin(x.b) * 60 - now)}</b><span>qoldi · ${hmMin(x.b) - hmMin(x.a)} daq</span></div>` : ""}</span></div>`).join("");
+  return `<div class="steps">${rows}</div>`;
+}
+let timerStep = null;
+setInterval(() => {
+  if (!D || VIEW !== "v-home") return;
+  const el = document.getElementById("stepCd"), now = nowSec();
+  if (D.now_min !== Math.floor(now / 60)) D.now_min = Math.floor(now / 60);
+  if (el) {
+    const left = +el.dataset.end - now;
+    el.textContent = fmtLeft(left);
+    if (left <= 0 && timerStep !== el.dataset.end) {
+      timerStep = el.dataset.end; haptic("ok"); toast("⏱ Vaqt tugadi — keyingi qadam");
+      renderNow(); renderTimeline();
+    }
+  } else if (now % 60 === 0) { renderNow(); renderTimeline(); }
+}, 1000);
 const C = { ink: "#171a16", grid: "#e5e9e1", plan: "#c7ccc3", lime: "#9be04a", limeSoft: "#b8f06a", amber: "#f2bf4b", coral: "#ef8571", rest: "#eef1eb", card: "#fff" };
 const MILESTONES = [["2026-11-07", 1050], ["2026-11-14", 1100], ["2026-11-21", 1180], ["2026-11-28", 1250], ["2026-12-02", 1280], ["2026-12-06", 1300]];
 const KIND = { weekday: "O'qish kuni", wstudy: "Dam olish kuni — o'qish", test: "Practice test kuni", review: "Takror kuni", etest: "Kechqurun test", light: "Yengil kun", rest: "Dam kuni", exam: "SAT kuni", prep: "Tayyorgarlik" };
@@ -706,7 +742,11 @@ function renderNow() {
   } else if (cur && !cur.status) {
     const vocabBlock = VOCAB_KEYS.includes(cur.key);
     h = head("Hozir", false, cur.time) + main(cur.emoji, cur.title, topic(cur) || (vocabBlock ? vocabLine() : ""))
+      + stepsHtml(cur)
       + `<div class="now-cta"><button class="btn go" data-mark="${cur.key}">${vocabBlock ? "Boshladim — so'zlarga" : "Boshladim"}</button></div>`
+      + (nxt ? `<div class="now-note">Keyin <b>${nxt.time.slice(0, 5)} ${esc(nxt.title)}</b></div>` : "");
+  } else if (cur && cur.status === "done" && d.now_min < blockEnd(cur) && (cur.steps || []).length && !VOCAB_KEYS.includes(cur.key)) {
+    h = head("Hozir", false, cur.time) + main(cur.emoji, cur.title, topic(cur)) + stepsHtml(cur)
       + (nxt ? `<div class="now-note">Keyin <b>${nxt.time.slice(0, 5)} ${esc(nxt.title)}</b></div>` : "");
   } else if (cur && cur.status === "done" && VOCAB_KEYS.includes(cur.key) && vsum().due + (vsum().next_set ? 1 : 0) > 0) {
     h = head("Hozir", false, cur.time) + main(cur.emoji, cur.title, vocabLine())
